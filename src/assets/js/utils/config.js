@@ -7,9 +7,10 @@ const pkg = require('../package.json');
 const nodeFetch = require("node-fetch");
 const convert = require('xml-js');
 let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
+let api = pkg.api
 
-let config = `${url}/launcher/config-launcher/config.json`;
-let news = `${url}/launcher/news-launcher/news.json`;
+let config = `${api}/config.json`;
+let news = `${api}/news.json`;
 let cmds = `${url}/launcher/config-launcher/commands.json`;
 
 class Config {
