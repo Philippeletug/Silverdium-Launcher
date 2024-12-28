@@ -39,8 +39,10 @@ Rejoignez notre communauté sur Discord : [Silverdium Discord](https://discord.g
 
 Merci à la communauté de **Silverdium** pour son soutien continu et à tous les contributeurs qui ont aidé à faire avancer ce projet.
 
----
 *Launcher basé sur le [Selvania Launcher](https://github.com/luuxis/Selvania-Launcher) de Luuxis.*
 ---
-**Copyright 2024 SilverCore**  
-Tous droits réservés.
+Merci de soutenir les projets [SilverCore](https://core.silverdium.fr) !<br>
+[Vous pouvez nous aider](https://tipeee.com/silverdium) !<br>
+
+Copyright (c) 2024 SilverCore | Tous droits réservés.<br>
+Vous n'êtes pas autorisé à vendre ce code sans l'autorisation explicite de l'auteur.
