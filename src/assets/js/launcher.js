@@ -19,8 +19,8 @@ const { AZauth, Microsoft, Mojang } = require('silver-mc-java-core');
 
 // libs
 const { ipcRenderer } = require('electron');
-const Swal = require('sweetalert2');
 const fs = require('fs');
+const os = require('os');
 
 let noroll = false;
 
@@ -340,6 +340,8 @@ class Launcher {
         console.log('loading initConfigClient function...');
         console.log('Initializing Config Client...')
         let configClient = await this.db.readData('configClient')
+        const totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
+        const maxmem = totalMem / 2;
 
         if (!configClient) {
             await this.db.createData('configClient', {
@@ -349,18 +351,18 @@ class Launcher {
                     java_path: null,
                     java_memory: {
                         min: 2,
-                        max: 4
+                        max: maxmem
                     }
                 },
                 game_config: {
                     screen_size: {
-                        width: 854,
-                        height: 480
+                        width: 1080,
+                        height: 720
                     }
                 },
                 launcher_config: {
                     download_multi: 5,
-                    theme: 'auto',
+                    theme: 'dark',
                     closeLauncher: 'close-launcher',
                     intelEnabledMac: true
                 }

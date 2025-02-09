@@ -109,8 +109,11 @@ class Home {
 
     socialLick() {
         console.log('loading socialLinck function...');
-        let socials = document.querySelectorAll('.social-block')
-        let webbtn = document.querySelector('.web-button');
+        const socials = document.querySelectorAll('.social-block');
+        const webbtn = document.querySelector('.web-button');
+        const dscrdbtn = document.querySelector('.dscrd-button');
+        const gitbtn = document.querySelector('.git-button');
+        const ytbbtn = document.querySelector('.ytb-button');   
 
         webbtn.addEventListener('click', e => {
             confetti({
@@ -132,7 +135,12 @@ class Home {
                     particleCount: 100,
                     spread: 80,
                     origin: { x: 0.5, y: 0.8 }
-                }); 
+                });
+                
+                dscrdbtn.dataset.url = this.config.LINK.discord;
+                webbtn.dataset.url = this.config.LINK.siteweb;
+                gitbtn.dataset.url = this.config.LINK.github.silverdium;
+                ytbbtn.dataset.url = this.config.LINK.youtube;
                 shell.openExternal(e.target.dataset.url)
             })
         });

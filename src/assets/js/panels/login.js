@@ -139,6 +139,7 @@ class Login {
         loginAZauth.style.display = 'block';
 
         AZauthConnectBTN.addEventListener('click', async () => {
+            document.getElementById('redirect').style.display = 'none';
             PopupLogin.openPopup({
                 title: 'Connexion en cours...',
                 content: 'Veuillez patienter...<br>Si cela dure trop longtemps, relancer le launcher',
@@ -158,6 +159,9 @@ class Login {
                 console.log('Connection développeurs')
                 PopupLogin.closePopup();
                 changePanel('home');
+                document.querySelector('.play-btn').style.display = 'none';
+                document.querySelector('.play-instance').style.display = 'none';
+                document.querySelector('.play-elements').style.display = 'none';
                 return;
             } 
 
