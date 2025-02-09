@@ -11,7 +11,6 @@ let api = pkg.api
 
 let config = `${api}/config.json`;
 let news = `${api}/news.json`;
-let cmds = `${url}/launcher/config-launcher/commands.json`;
 
 class Config {
     GetConfig() {
@@ -40,8 +39,7 @@ class Config {
     }
 
     getCmds() {
-        console.log('Initialisation des commandes...')
-        console.log(`Commands ${cmds.name} : ${cmds.commande} : ${cmds.describe} : \n${cmds.jsexe}`);
+        console.log('')
     }
 
     async getNews() {

@@ -111,6 +111,7 @@ class Login {
             popupLogin.closePopup();
         });
     }
+    
 
     async getAZauth() {
         console.log('Initializing AZauth login...');
@@ -216,30 +217,34 @@ class Login {
         });
     }
 
+    
     async saveData(connectionData) {
         let configClient = await this.db.readData('configClient');
-        let account = await this.db.createData('accounts', connectionData)
-        let instanceSelect = configClient.instance_selct
-        let instancesList = await config.getInstanceList()
+        let account = await this.db.createData('accounts', connectionData);
+        let instanceSelect = configClient.instance_select;
+        let instancesList = await config.getInstanceList();
         configClient.account_selected = account.ID;
-
+    
         for (let instance of instancesList) {
             if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == account.name)
-                if (whitelist !== account.name) {
-                    if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        configClient.instance_selct = newInstanceSelect.name
-                        await setStatus(newInstanceSelect.status)
+                let whitelist = instance.whitelist.find(whitelist => whitelist === account.name);
+                if (!whitelist) { 
+                    if (instance.name === instanceSelect) {
+                        let newInstanceSelect = instancesList.find(i => !i.whitelistActive);
+                        if (newInstanceSelect) {  // Vérification que newInstanceSelect n'est pas undefined
+                            configClient.instance_select = newInstanceSelect.name;
+                            await setStatus(newInstanceSelect.status); 
+                        }
                     }
                 }
             }
         }
-
+    
         await this.db.updateData('configClient', configClient);
         await addAccount(account);
         await accountSelect(account);
-        changePanel('home');
+        await changePanel('home'); 
     }
+
 }
 export default Login;
