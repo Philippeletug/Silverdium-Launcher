@@ -361,9 +361,7 @@
 }
 
 .settings-btn:hover {
-    filter: brightness(110%) saturate(120%) contrast(120%);
-    width: 4rem;
-    height: 4rem;
+    transform: scale(1.15);
 }
 
 

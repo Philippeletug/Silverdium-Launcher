@@ -36,14 +36,15 @@
     font-weight: bold;
     cursor: pointer;
     margin: 15px 10px;
-    transition: margin 0.4s ease, padding 0.4s ease;
+    transition: all 0.3s;
 }
 
 .connect:hover, .cancel:hover, .register:hover {
-    margin: 17px 12px;
-    padding: 0.4rem 4.1rem;
+    transform: scale(1.05);
 }
-
+.connect:active, .cancel:active, .register:active {
+    transform: scale(0.95);
+}
 
 .input-login .email,
 .input-login .password,

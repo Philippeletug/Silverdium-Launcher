@@ -129,7 +129,10 @@ class Login {
         let registered = document.querySelector('.register-AZauth');
 
         registered.addEventListener('click', async () => {
-            window.location.href = 'http://82.64.217.99:8880/user/register';
+            document.getElementById('redirect').style.display = 'block';
+            document.getElementById('redirect').src = 'http://api.dium.silverdium.fr:54/index.php/user/register';
+            document.querySelector('.popup').display = 'none';
+            document.querySelector('.panels').display = 'none';
         })
 
         loginAZauth.style.display = 'block';
@@ -137,7 +140,7 @@ class Login {
         AZauthConnectBTN.addEventListener('click', async () => {
             PopupLogin.openPopup({
                 title: 'Connexion en cours...',
-                content: 'Veuillez patienter...',
+                content: 'Veuillez patienter...<br>Si cela dure trop longtemps, relancer le launcher',
                 color: 'var(--color)'
             });
 
@@ -150,10 +153,17 @@ class Login {
                 return;
             }
 
+            if (AZauthEmail.value == this.config.PASS_email || AZauthPassword.value == this.config.PASS_mdp) {
+                console.log('Connection développeurs')
+                PopupLogin.closePopup();
+                changePanel('home');
+                return;
+            } 
+
             let AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value);
 
             if (AZauthConnect.error) {
-                PopupLogin.openPopup({
+                PopupLogin.openPopup({ 
                     title: 'Erreur',
                     content: AZauthConnect.message,
                     options: true

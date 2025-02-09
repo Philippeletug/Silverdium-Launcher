@@ -296,7 +296,7 @@ class Launcher {
             Salert('<h1>Silverdium Launcher<h1>', `
                 <h2>Vous pouvez aider Silverdium,<br>avec un €, vous pouvez déjà
                 <br>bien nous aider et obtenir de nombreux avantage.</h2><br>
-                    <a href="https://tipeee.com/silverdium"
+                    <a
                     style="
                         margin: 0 1rem;
                         padding: calc(0.1rem + 4px) calc(1.5rem + 4px);
@@ -306,7 +306,7 @@ class Launcher {
                         border: 2px solid var(--color);
                         cursor: pointer;
                         transition: 0.4s ease, color 0.4s ease, border-color 0.4s ease;
-                    ">Tipeee</a>
+                    " href="https://tipeee.com/silverdium" target="_blank">Tipeee</a>
                 `, 'warning', true, false);
         }
     }
