@@ -1,3 +1,12 @@
+/**
+ * @author Luuxis - master
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
+ * 
+ * @author Silverdium
+ * @author SilverCore
+ * @author Mister Papaye
+ */
+
 const { AZauth, Mojang } = require('silver-mc-java-core');
 const { ipcRenderer } = require('electron');
 

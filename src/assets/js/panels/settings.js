@@ -1,6 +1,10 @@
 /**
- * @author Silverdium
+ * @author Luuxis - master
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
+ * 
+ * @author Silverdium
+ * @author SilverCore
+ * @author Mister Papaye
  */
 
 import { changePanel, accountSelect, viderDossier, database, Slider, config, setStatus, popup, appdata, setBackground, Salert } from '../utils.js'

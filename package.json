@@ -2,7 +2,7 @@
     "name": "silverdium-launcher",
     "preductname": "Silverdium Launcher",
     "gamename": "Silverdium | V1 | 1.16.5",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Le meilleur launcher pour le meilleur serveur minecraft Silverdium",
     "main": "src/app.js",
     "author": {
@@ -10,7 +10,7 @@
         "email": "silverdium@hotmail.com",
         "url": "https://silverdium.fr"
     },
-    "url": "http://82.64.217.99:8880/api/silverdium/launcher-api",
+    "url": "https://api.silverdium.fr/dium/launcher",
     "api": "https://api.silverdium.fr/dium/launcher",
     "loggername": "SuperLogger",
     "mcloggername": "Silverdium",
@@ -22,7 +22,7 @@
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
         "build": "node build.js --obf=true --build=platform",
-        "icon": "node build.js --icon=http://82.64.217.99:8880/api/Silverdium/launcher-api/icon.png"
+        "icon": "node build.js --icon=https://api.silverdium.fr/dium/launcher/icon.png"
     },
     "license": "CCANC",
     "nodemonConfig": {
