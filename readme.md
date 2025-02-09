@@ -2,6 +2,7 @@
 
 Bienvenue dans le repo du launcher officiel du serveur **Silverdium**. Ce launcher est conçu pour faciliter l'accès au serveur et assurer une expérience de jeu fluide pour les joueurs de **Silverdium**.  
 **Silverdium est actuellement en développement, seuls les développeurs de Silverdium pourront lancer des instances !**
+new update to 1.1.2
 
 ## À propos
 
