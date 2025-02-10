@@ -1,8 +1,7 @@
 {
     "name": "silverdium-launcher",
     "preductname": "Silverdium Launcher",
-    "gamename": "Silverdium | V1 | 1.16.5",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "description": "Le meilleur launcher pour le meilleur serveur minecraft Silverdium",
     "main": "src/app.js",
     "author": {
@@ -16,7 +15,7 @@
     "mcloggername": "Silverdium",
     "bottoken": "fonction en dev pour cause de cybersecu",
     "dlogsalonId": "#",
-    "copyright": "Copyright © 2020 Luuxis | © 2024 SilverCore",
+    "copyright": "Copyright © 2020 Luuxis | © 2024 - 2025 SilverCore",
     "releasetype": "release",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",

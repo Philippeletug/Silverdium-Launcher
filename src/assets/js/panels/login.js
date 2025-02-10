@@ -215,6 +215,9 @@ class Login {
                     PopupLogin.closePopup();
                 });
             } else if (!AZauthConnect.A2F) {
+                document.querySelector('.play-btn').style.display = 'block';
+                document.querySelector('.play-instance').style.display = 'block';
+                document.querySelector('.play-elements').style.display = 'block';
                 await this.saveData(AZauthConnect)
                 PopupLogin.closePopup();
             }

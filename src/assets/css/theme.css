@@ -15,7 +15,7 @@
 }
 
 .light {
-    --color: #2b1272;
+    --color: #2c2c2c;
     --background: rgb(245, 245, 245);
     --background-element: #c2c2c2;
     --background-transparent: rgba(204, 204, 204, 0.8);

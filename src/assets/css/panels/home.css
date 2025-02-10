@@ -172,7 +172,7 @@
     bottom: 100;
     right: 0;
     width: 15%;
-    height: calc(80% - 1rem);
+    height: calc(86% - 1rem);
     justify-content: center;
     margin-bottom: 1rem;
 }
@@ -187,13 +187,16 @@
     background: var(--background-transparent);
     width: 90px;
     height: 90px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 1rem;
     margin-bottom: 1rem;
     border-radius: 10px;
     font-size: 2rem;
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.2s, box-shadow 0.4s;
 }
 
 .social-block .icon-social {
@@ -203,13 +206,13 @@
     width: 55%;
     filter: var(--svg-color);
 }
-.social-block {
-    transition: all 0.4s;
-}
 
 .social-block:hover {
     filter: contrast(130%) saturate(130%) brightness(130%);
-    opacity: 0.9;
+    box-shadow: 0 0 1px 1px var(--element-color);
+}
+.social-block:active {
+    transform: scale(0.95);
 }
 
 
@@ -301,6 +304,7 @@
     padding: 0 2.5rem;
     color: #ffffff;
 }
+.play-btn:active { transform: scale(0.96); }
 
 .play-instance:hover .aura {
     transform: translate(-50%, -50%) scale(1);

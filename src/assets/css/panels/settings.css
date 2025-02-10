@@ -2,7 +2,7 @@
     display: flex;
     height: 100%;
 }
-
+ 
 .nav-settings  {
     width: 20%;
     height: 100%;
@@ -60,11 +60,14 @@
     margin: 0.5rem 0;
     align-items: center;
     cursor: pointer;
-    transition: width 0.4s ease;
+    transition: all 0.3s ease;
 }
 
 .nav-settings-btn:hover {
-    width: 78%;
+    transform: scale(1.05);
+}
+.nav-settings-btn:active {
+    transform: scale(0.96);
 }
 
 .active-settings-BTN {
@@ -79,13 +82,17 @@
     color: var(--light-color);
     border: 2px solid var(--color);
     cursor: pointer;
-    transition: 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    transition: all 0.4s;
 }
 
 .restore-btn:hover {
     background: var(--light-color);
     color: var(--dark-color);
     border-color: var(--hover-color);
+}
+
+.restore-btn:active {
+    transform: scale(0.96);
 }
 
 .uninst-btn {
@@ -485,7 +492,10 @@
     border-radius: 15px;
     padding: 1rem;
     cursor: pointer;
+    transition: all 0.3s;
 }
+.close-btn:hover { transform: scale(1.05); }
+.close-btn:active { transform: scale(0.96); }
 
 .active-close {
     border: 4px solid var(--element-color);

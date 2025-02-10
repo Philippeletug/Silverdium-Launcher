@@ -408,6 +408,7 @@ class Settings {
                         }
                     });
                 } else {
+                    Salert('Silverdium Launcher', `<h3>Aucune instance télécharger, donc aucune instance suprimer !</h3><h4>Cela peut arriver si tu n'a jamais lancer le jeux !</h4>`, 'error', true, false);
                     console.warn(`Le dossier ${instancesFolder} n'existe pas.`);
                 }
             } catch (error) {
