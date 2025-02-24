@@ -62,9 +62,6 @@ async function appdata() {
     }
 }
 
-export function register() {
-    window.location.href = 'http://82.64.217.99:8880/api/Silverdium/launcher-api/silverdium-acces/register.html';
-}
 
 async function addAccount(data) {
     let skin = false
@@ -96,7 +93,7 @@ async function accountSelect(data) {
 
 async function headplayer(skinBase64) {
     let skin = await new skin2D().creatHeadTexture(skinBase64);
-    document.querySelector(".player-head").style.backgroundImage = `url(${skin})`;
+    document.querySelector(".player-head").style.backgroundImage = `url(${skin})`; 
 }
 
 async function setStatus(opt) {

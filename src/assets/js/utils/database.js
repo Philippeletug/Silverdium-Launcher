@@ -17,7 +17,7 @@ class database {
             tableName: tableName,
             path: `${await ipcRenderer.invoke('path-user-data')}${dev ? '../..' : '/databases'}`,
             tableColumns: tableConfig,
-        });
+        }); 
     }
 
     async getDatabase(tableName) {
@@ -26,7 +26,7 @@ class database {
         });
     }
 
-    async createData(tableName, data) {
+    async createData(tableName, data) { 
         let table = await this.getDatabase(tableName);
         data = await nodedatabase.createData(table, { json_data: JSON.stringify(data) })
         let id = data.id

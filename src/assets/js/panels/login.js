@@ -131,7 +131,7 @@ class Login {
 
         registered.addEventListener('click', async () => {
             document.getElementById('redirect').style.display = 'block';
-            document.getElementById('redirect').src = 'http://api.dium.silverdium.fr:54/index.php/user/register';
+            document.getElementById('redirect').src = `${this.config.online}/user/register`;
             document.querySelector('.popup').display = 'none';
             document.querySelector('.panels').display = 'none';
         })
@@ -141,8 +141,8 @@ class Login {
         AZauthConnectBTN.addEventListener('click', async () => {
             document.getElementById('redirect').style.display = 'none';
             PopupLogin.openPopup({
-                title: 'Connexion en cours...',
-                content: 'Veuillez patienter...<br>Si cela dure trop longtemps, relancer le launcher',
+                title: 'Connexion en cours...', 
+                content: 'Veuillez patienter...',
                 color: 'var(--color)'
             });
 
@@ -219,6 +219,7 @@ class Login {
                 document.querySelector('.play-instance').style.display = 'block';
                 document.querySelector('.play-elements').style.display = 'block';
                 await this.saveData(AZauthConnect)
+
                 PopupLogin.closePopup();
             }
         });
