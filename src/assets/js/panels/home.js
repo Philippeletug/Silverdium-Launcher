@@ -268,16 +268,16 @@ class Home {
                 enable: options.loadder.loadder_type == 'none' ? false : true
             },
 
+            java: {
+                version: 17,
+                type: 'jre',
+            },
+
             verify: options.verify,
 
             ignored: [...options.ignored],
 
             javaPath: configClient.java_config.java_path,
-
-            java: {
-                version: 17,
-                type: 'jre',
-            },
 
             screen: {
                 width: configClient.game_config.screen_size.width,

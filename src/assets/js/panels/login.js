@@ -155,15 +155,18 @@ class Login {
                 return;
             }
 
-            if (AZauthEmail.value == this.config.PASS_email || AZauthPassword.value == this.config.PASS_mdp) {
-                console.log('Connection développeurs')
-                PopupLogin.closePopup();
-                changePanel('home');
-                document.querySelector('.play-btn').style.display = 'none';
-                document.querySelector('.play-instance').style.display = 'none';
-                document.querySelector('.play-elements').style.display = 'none';
-                return;
-            } 
+
+            if (this.config.PASS.value) {
+                if (AZauthEmail.value == this.config.PASS.email || AZauthPassword.value == this.config.PASS.mdp) {
+                    console.log('Connection développeurs')
+                    PopupLogin.closePopup();
+                    changePanel('home');
+                    document.querySelector('.play-btn').style.display = 'none';
+                    document.querySelector('.play-instance').style.display = 'none';
+                    document.querySelector('.play-elements').style.display = 'none';
+                    return;
+                } 
+            }
 
             let AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value);
 
