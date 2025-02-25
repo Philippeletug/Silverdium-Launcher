@@ -12,7 +12,7 @@ import Home from './panels/home.js';
 import Settings from './panels/settings.js';
 
 // import modules
-import { logger, config, changePanel, database, popup, setBackground, accountSelect, addAccount, pkg, appdata, Salert } from './utils.js';
+import { logger, config, changePanel, database, popup, setBackground, initializeDiscordRPC, accountSelect, addAccount, pkg, appdata, Salert } from './utils.js';
 let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
 let cmds = `${url}/launcher/config-launcher/commands.json`;
 const { AZauth, Microsoft, Mojang } = require('silver-mc-java-core');
@@ -48,6 +48,7 @@ class Launcher {
         this.maintenance();
         this.donsvp();
         this.initvar();
+        initializeDiscordRPC();
     }
 
     initLog() {

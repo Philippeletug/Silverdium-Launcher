@@ -23,6 +23,7 @@ import popup from './utils/popup.js';
 import { viderDossier } from './utils/viderdossier.js';
 import { skin2D } from './utils/skin.js';
 import slider from './utils/slider.js';
+import initializeDiscordRPC from './utils/discord-rpc.js';
 
 async function setBackground(theme) {
     if (typeof theme == 'undefined') {
@@ -146,5 +147,6 @@ export {
     accountSelect as accountSelect,
     slider as Slider,
     pkg as pkg,
-    setStatus as setStatus
+    setStatus as setStatus,
+    initializeDiscordRPC as initializeDiscordRPC
 }
