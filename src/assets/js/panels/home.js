@@ -247,6 +247,9 @@ class Home {
         let infoStarting = document.querySelector(".info-starting-game-text")
         let progressBar = document.querySelector('.progress-bar')
 
+        const MaxRam = configClient.java_config.java_memory.max * 1024;
+        const AroundMaxRam = Math.floor(MaxRam);
+
         console.log(`loading config.dataDirectory in : ${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
         let opt = {
             url: options.url,
@@ -278,7 +281,7 @@ class Home {
 
             memory: {
                 min: `${configClient.java_config.java_memory.min * 1024}M`,
-                max: `${configClient.java_config.java_memory.max * 1024}M`
+                max: `${AroundMaxRam}M`
             }
         }
 
@@ -292,7 +295,6 @@ class Home {
 
         launch.on('extract', extract => {
             ipcRenderer.send('main-window-progress-load')
-            console.log(extract);
         });
 
         launch.on('progress', (progress, size) => {
@@ -323,7 +325,6 @@ class Home {
         })
 
         launch.on('patch', patch => {
-            console.log(patch);
             ipcRenderer.send('main-window-progress-load')
             infoStarting.innerHTML = `Patch en cours...`
         });
@@ -331,7 +332,6 @@ class Home {
         launch.on('data', (e) => {
             progressBar.style.display = "none"
             if (configClient.launcher_config.closeLauncher == 'close-launcher') {
-                console.log('Arret du jeux.');
                 ipcRenderer.send("main-window-hide")
             };
             new logger(`${pkg.mcloggername}`, '#36b030'); 
