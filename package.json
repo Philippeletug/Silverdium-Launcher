@@ -2,7 +2,7 @@
     "name": "silverdium-launcher",
     "preductname": "Silverdium Launcher",
 
-    "version": "1.1.9",
+    "version": "1.1.10",
     "description": "Le meilleur launcher pour le meilleur serveur minecraft Silverdium",
     "main": "src/app.js",
 
