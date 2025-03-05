@@ -35,13 +35,14 @@ jobs:
           draft: false
           prerelease: ${{ contains(env.VERSION, 'beta') || contains(env.VERSION, 'alpha') }}
 
-  build-linux:
+  build-launcher:
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        format: [deb, rpm]
+        os: [ubuntu-latest, macos-14, windows-latest]
+        format: [deb, rpm, dmg, zip, exe]
 
     steps:
       - name: Checkout repository
@@ -53,24 +54,29 @@ jobs:
           node-version: 18.x
 
       - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y libx11-dev fakeroot dpkg rpm
+
+      - name: Install Windows dependencies
+        if: matrix.os == 'windows-latest'
+        run: choco install nsis
 
       - name: Install NPM dependencies
         run: npm ci
         shell: bash
 
-      - name: Build Linux Application (${{ matrix.format }})
+      - name: Build Application (${{ matrix.os }} - ${{ matrix.format }})
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build -- --linux --${{ matrix.format }}
+        run: npm run build -- --${{ matrix.format }}
 
-      - name: Upload Linux Build Artifacts (${{ matrix.format }})
+      - name: Upload Build Artifacts (${{ matrix.os }} - ${{ matrix.format }})
         uses: actions/upload-artifact@v4
         with:
-          name: launcher-linux-${{ matrix.format }}
+          name: launcher-${{ matrix.os }}-${{ matrix.format }}
           path: build/
 
-      - name: Upload to GitHub Release (${{ matrix.format }})
+      - name: Upload to GitHub Release (${{ matrix.os }} - ${{ matrix.format }})
         uses: softprops/action-gh-release@v1
         with:
           files: build/*.${{ matrix.format }}
