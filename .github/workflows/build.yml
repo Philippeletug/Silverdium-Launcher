@@ -1,85 +1,57 @@
-name: Launcher Build
+name: Build Silverdium Launcher
 
 on:
   push:
     branches: [ recette ]
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Get version from package.json
-        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
-
-      - name: Create Git tag
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ env.VERSION }}
-          git push origin ${{ env.VERSION }}
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.VERSION }}
-          release_name: "Release ${{ env.VERSION }}"
-          draft: false
-          prerelease: ${{ contains(env.VERSION, 'beta') || contains(env.VERSION, 'alpha') }}
-
-  build-launcher:
-    needs: create-release
+  build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-14, windows-latest]
-        format: [deb, rpm, dmg, zip, exe]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 18
 
-      - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y libx11-dev fakeroot dpkg rpm
+      - name: Install dependencies
+        run: npm install
 
-      - name: Install Windows dependencies
-        if: matrix.os == 'windows-latest'
-        run: choco install nsis
-
-      - name: Install NPM dependencies
-        run: npm ci
-        shell: bash
-
-      - name: Build Application (${{ matrix.os }} - ${{ matrix.format }})
+      - name: Build application
+        run: |
+          npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build -- --${{ matrix.format }}
 
-      - name: Upload Build Artifacts (${{ matrix.os }} - ${{ matrix.format }})
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: launcher-${{ matrix.os }}-${{ matrix.format }}
-          path: build/
+          name: Silverdium-Launcher-${{ runner.os }}
+          path: build/*
 
-      - name: Upload to GitHub Release (${{ matrix.os }} - ${{ matrix.format }})
-        uses: softprops/action-gh-release@v1
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          files: build/*.${{ matrix.format }}
-          tag_name: ${{ env.VERSION }}
+          path: build
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
