@@ -1,24 +1,30 @@
 .global {
-    --element-color: #00bd7a;
-    --transition: all 0.5s cubic-bezier(1, 0.46, 0, 1.29);
-    --dark-color: #292929;
-    --light-color: rgb(245, 245, 245);
+    --element-color: #9b4dff; /* Violet */
+    --transition: all 0.5s cubic-bezier(0.7, 0.1, 0.3, 1);
+    --dark-color: #0e0b1e;
+    --light-color: #ca24ca; /* Or */
 }
 
 .dark {
-    --color: #38e1ff;
-    --background: #292929;
-    --background-element: #424242;
-    --background-transparent: #2c2c2ccc;
-    --shadow: rgba(25, 25, 25, 0.7);
-    --svg-color: brightness(0) saturate(100%) invert(100%) sepia(55%) saturate(23%) hue-rotate(236deg) brightness(108%) contrast(92%);
+    --color: #b39ddb; /* Violet clair pour le texte */
+    --background: #333333; /* Gris */
+    --background-element: #2b212ae3; /* Violet plus foncé pour ne pas se confondre avec le texte */
+    --background-transparent: rgba(51, 51, 51, 0.85);
+    --shadow: rgba(0, 0, 0, 0.5); /* Ombre gris plus subtile et transparente */
+    --svg-color: saturate(100%) invert(20%) sepia(30%) saturate(500%) hue-rotate(210deg) brightness(200%) contrast(200%);
 }
 
-.light {
+
+
+
+
+
+
+/* .light {
     --color: #2c2c2c;
     --background: rgb(245, 245, 245);
     --background-element: #c2c2c2;
     --background-transparent: rgba(204, 204, 204, 0.8);
     --shadow: rgba(208, 208, 208, 0.7);
     --svg-color: brightness(0) saturate(100%) invert(0%) sepia(5%) saturate(1719%) hue-rotate(357deg) brightness(94%) contrast(84%);
-}
+} */
