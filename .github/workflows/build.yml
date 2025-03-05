@@ -8,82 +8,61 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Get version
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_ENV
-      
-      - name: Create Release
+
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.version }}
-          release_name: release ${{ env.version }}
+          release_name: "Release ${{ env.version }}"
           draft: false
           prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') }}
 
   build-launcher:
     needs: create-release
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: '18.x'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
         shell: bash
 
-      - name: Build with obfuscation and custom icon
+      - name: Run Build Script
         run: |
-          # Lancer ton script de build personnalisé avec les options
-          node build.js --obf=true --icon=https://example.com/icon.png --build=platform
+          node ./path/to/your/build-script.js --build=platform --obf=true --icon=https://your-icon-url.com/icon.png
         shell: bash
 
-      - name: Build App
-        run: |
-          # Utiliser Electron Builder pour créer les packages pour différentes plateformes
-          npm run build
-        shell: bash
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: Silverdium-Launcher-Build
-          path: build/**/*
+          name: launcher-build
+          path: build/*
 
-      - name: Create GitHub Release Artifact
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/your-built-file.zip
-          asset_name: silverdium-launcher-${{ env.version }}.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  release:
+  release-assets:
     needs: build-launcher
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Release App on GitHub
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/your-built-file.zip
+          files: build/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
