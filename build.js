@@ -105,7 +105,7 @@ class Index {
                 linux: {
                     icon: "./app/assets/images/icon.png",
                     target: [{
-                        target: "appimage",
+                        target: ["deb", "rpm"],
                         arch: "x64"
                     }]
                 },
