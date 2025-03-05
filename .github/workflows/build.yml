@@ -1,33 +1,35 @@
 name: Launcher Build
+
 on:
   push:
-    branches: [ master ]
+    branches: [ recette ]
 
 jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Get version
-        run: |
-          sudo apt-get install -y jq
-          echo "version=$(jq -r .version package.json)" >> $GITHUB_ENV
-      
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Get version from package.json
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
       - name: Show Version for Debug
-        run: echo "Version is ${{ env.version }}"
+        run: echo "Version is ${{ env.VERSION }}"
 
-      - name: Create Release
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.version }}
-          release_name: "release ${{ env.version }}"
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
           draft: false
-          prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') }}
+          prerelease: ${{ contains(env.VERSION, 'beta') || contains(env.VERSION, 'alpha') }}
 
   build-launcher:
     needs: create-release
@@ -35,28 +37,71 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-14, ubuntu-latest, windows-latest]
+        os: [macos-14, windows-latest]
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
-
-      - name: Install Dependencies
+      - name: Install NPM dependencies
         run: npm ci
         shell: bash
 
-      - name: Build
+      - name: Build application
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
         shell: bash
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: launcher-build-${{ runner.os }}
+          path: build/
+
+  build-linux:
+    needs: create-release
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        format: [deb, rpm]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install Linux dependencies
+        run: sudo apt-get install -y libx11-dev fakeroot dpkg rpm
+
+      - name: Install NPM dependencies
+        run: npm ci
+        shell: bash
+
+      - name: Build Linux Application (${{ matrix.format }})
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build -- --linux --${{ matrix.format }}
+
+      - name: Upload Linux Build Artifacts (${{ matrix.format }})
+        uses: actions/upload-artifact@v3
+        with:
+          name: launcher-linux-${{ matrix.format }}
+          path: build/
+
+      - name: Upload to GitHub Release (${{ matrix.format }})
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*.${{ matrix.format }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
