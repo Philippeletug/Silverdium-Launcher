@@ -66,37 +66,42 @@ async function appdata() {
 
 
 async function addAccount(data) {
-    let skin = false
-    if (data?.profile?.skins[0]?.base64) skin = await new skin2D().creatHeadTexture(data.profile.skins[0].base64);
+    const skinUrl = data.data?.dataplus?.url?.head + '/' + data.data.name;
     let div = document.createElement("div");
     div.classList.add("account");
-    div.id = data.ID;
+    div.id = data.data.userId;
+
     div.innerHTML = `
-        <div class="profile-image" ${skin ? 'style="background-image: url(' + skin + ');"' : ''}></div>
+        <div class="profile-image" style="background-image: url(https://${skinUrl});"></div>
         <div class="profile-infos">
-            <div class="profile-pseudo">${data.name}</div>
-            <div class="profile-uuid">${data.uuid}</div>
+            <div class="profile-pseudo">${data.data.name}</div>
+            <div class="profile-uuid">${data.data.dataplus.UUID}</div>
         </div>
-        <div class="delete-profile" id="${data.ID}">
+        <div class="delete-profile" id="${data.data.userId}">
             <div class="icon-account-delete delete-profile-icon"></div>
         </div>
-    `
+    `;
+
     return document.querySelector('.accounts-list').appendChild(div);
 }
 
+
 async function accountSelect(data) {
-    let account = document.getElementById(`${data.ID}`);
-    let activeAccount = document.querySelector('.account-select')
+    let account = document.getElementById(`${data.data.userId}`);
+    let activeAccount = document.querySelector('.account-select');
 
-    if (activeAccount) activeAccount.classList.toggle('account-select');
+    if (activeAccount) activeAccount.classList.remove('account-select');
     account.classList.add('account-select');
-    if (data?.profile?.skins[0]?.base64) headplayer(data.profile.skins[0].base64);
+
+    const headUrl = data.data?.dataplus?.url?.skin?.head + '/' + data.data.name;
+    headplayer(headUrl);
 }
 
-async function headplayer(skinBase64) {
-    let skin = await new skin2D().creatHeadTexture(skinBase64);
-    document.querySelector(".player-head").style.backgroundImage = `url(${skin})`; 
+
+function headplayer(headUrl) {
+    document.querySelector(".player-head").style.backgroundImage = `url(https://${headUrl})`;
 }
+
 
 async function setStatus(opt) {
     let nameServerElement = document.querySelector('.server-status-name')

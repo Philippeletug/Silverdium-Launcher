@@ -8,9 +8,11 @@
  */
 
 const { AZauth, Mojang } = require('silver-mc-java-core');
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, session } = require('electron');
+const fs = require('fs');
+const path = require('path');
 
-import { popup, database, changePanel, accountSelect, SilverAuth, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
+import { popup, database, changePanel, accountSelect, SilverAuth, appdata, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
 import silverauth from '../utils/silverauth.js';
  
 class Login {
@@ -131,14 +133,33 @@ class Login {
         let AZauthCancelA2F = document.querySelector('.cancel-AZauth-A2F');
         let registered = document.querySelector('.register-AZauth');
 
-        let SilverAuthVerify = await SilverAuth.verify();
+        const appDataPath = await appdata();
+        const isMac = process.platform === 'darwin';
+        const cleint_json_path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/token.json`;
+
+        const client = require(cleint_json_path);
+
+        let SilverAuthVerify = await SilverAuth.verify(client.token);
 
         if (SilverAuthVerify.valid) {
+
+            const SaccountData = {
+                valid: SilverAuthVerify.valid,
+                token: SilverAuthVerify.token,
+                data: SilverAuthVerify.data.usr_info,
+                sub: SilverAuthVerify.data.sub
+            };
+
+            await fs.promises.writeFile(cleint_json_path, JSON.stringify(SaccountData, null, 2));
+
             document.querySelector('.play-btn').style.display = 'block';
             document.querySelector('.play-instance').style.display = 'block';
             document.querySelector('.play-elements').style.display = 'block';
             PopupLogin.closePopup();
+            await addAccount(SaccountData);
+            await accountSelect(SaccountData);
             await changePanel('home'); 
+
         }
 
         registered.addEventListener('click', async () => {
@@ -146,6 +167,7 @@ class Login {
         })
 
         loginAZauth.style.display = 'block';
+
 
         AZauthConnectBTN.addEventListener('click', async () => {
             document.getElementById('redirect').style.display = 'none';
@@ -155,6 +177,7 @@ class Login {
                 color: 'var(--color)'
             });
 
+
             if (AZauthEmail.value == '' || AZauthPassword.value == '') {
                 return PopupLogin.openPopup({
                     title: 'Erreur',
@@ -162,7 +185,6 @@ class Login {
                     options: true
                 });
             }
-
 
             if (this.config.PASS.value) {
                 if (AZauthEmail.value == this.config.PASS.email || AZauthPassword.value == this.config.PASS.mdp) {
@@ -176,52 +198,65 @@ class Login {
                 } 
             }
 
-            let SilverAuthConnect = await SilverAuth.login(AZauthEmail.value, AZauthPassword.value);
+            let SILVERAuthConnect = await SilverAuth.login(AZauthEmail.value, AZauthPassword.value);
+            let SilverAuthConnect = SILVERAuthConnect.data;
+
             console.log(SilverAuthConnect)
+
             if (SilverAuthConnect.error) {
+                PopupLogin.closePopup();
                 PopupLogin.openPopup({ 
                     title: 'Erreur',
-                    content: SilverAuthConnect.message.silver,
+                    content: SilverAuthConnect.message || SilverAuthConnect.message.silver,
                     options: true
                 });
                 return;
-            } else if (SilverAuthConnect.success) {
+            } else if (!SilverAuthConnect.error) {
+
+                const appDataPath = await appdata();
+                const isMac = process.platform === 'darwin';
+                const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
+
+                const verify = await SilverAuth.verify(SilverAuthConnect.token);
+
+                if (verify.error) {
+                    PopupLogin.openPopup({ 
+                        title: 'Erreur',
+                        content: verify.message || verify.message.silver,
+                        options: true
+                    });
+                }
+
+                const SaccountData = {
+                    valid: verify.valid,
+                    token: verify.token,
+                    data: verify.data.usr_info,
+                    sub: verify.data.sub
+                };
+
+                if (!fs.existsSync(Json_Path)) {
+                    await fs.promises.mkdir(Json_Path);
+                }
+                await fs.promises.writeFile(`${Json_Path}/token.json`, JSON.stringify(SaccountData, null, 2));
+                
+                this.saveData(SaccountData)
+                
                 document.querySelector('.play-btn').style.display = 'block';
                 document.querySelector('.play-instance').style.display = 'block';
                 document.querySelector('.play-elements').style.display = 'block';
                 PopupLogin.closePopup();
-                await changePanel('home'); 
+
             }
         });
     }
 
     
     async saveData(connectionData) {
-        let configClient = await this.db.readData('configClient');
-        let account = await this.db.createData('accounts', connectionData);
-        let instanceSelect = configClient.instance_select;
-        let instancesList = await config.getInstanceList();
-        configClient.account_selected = account.ID;
-    
-        for (let instance of instancesList) {
-            if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist === account.name);
-                if (!whitelist) { 
-                    if (instance.name === instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => !i.whitelistActive);
-                        if (newInstanceSelect) {  // Vérification que newInstanceSelect n'est pas undefined
-                            configClient.instance_select = newInstanceSelect.name;
-                            await setStatus(newInstanceSelect.status); 
-                        }
-                    }
-                }
-            }
-        }
-    
-        await this.db.updateData('configClient', configClient);
-        await addAccount(account);
-        await accountSelect(account);
+
+        await addAccount(connectionData);
+        await accountSelect(connectionData);
         await changePanel('home'); 
+
     }
 
 }

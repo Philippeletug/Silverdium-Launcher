@@ -7,7 +7,7 @@
  * @author Mister Papaye
  */
 
-const { app, ipcMain, nativeTheme } = require('electron');
+const { app, ipcMain, nativeTheme, session } = require('electron');
 const { Microsoft } = require('silver-mc-java-core');
 const { autoUpdater } = require('electron-updater')
 
@@ -51,6 +51,31 @@ ipcMain.on('update-window-progress-load', () => UpdateWindow.getWindow().setProg
 
 ipcMain.handle('path-user-data', () => app.getPath('userData'))
 ipcMain.handle('appData', e => app.getPath('appData'))
+
+ipcMain.handle('set-cookie', async (event, cookieData) => {
+    try {
+        await session.defaultSession.cookies.set({
+            url: 'http://localhost', // ou l’URL de ton app, mais elle doit être valide
+            name: cookieData.name,
+            value: cookieData.value,
+            expirationDate: Math.floor(Date.now() / 7 * 24 * 1000) + 3600 
+        });
+        return { success: true };
+    } catch (err) {
+        console.error('Erreur set-cookie :', err);
+        return { success: false, message: err.message };
+    }
+});
+
+ipcMain.handle('get-cookie', async (event, name) => {
+    try {
+        const cookies = await session.defaultSession.cookies.get({ name });
+        return cookies.length ? cookies[0].value : null;
+    } catch (err) {
+        console.error('Erreur get-cookie :', err);
+        return null;
+    }
+});
 
 ipcMain.on('main-window-maximize', () => {
     if (MainWindow.getWindow().isMaximized()) {

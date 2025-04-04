@@ -1,4 +1,8 @@
+const fs = require('fs/promises');
+const path = require('path');
 const fetch = require('node-fetch');
+
+import { appdata, config } from '../utils.js';
 
 class SilverAuth {
 
@@ -15,11 +19,13 @@ class SilverAuth {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`Erreur login: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(`Erreur login: ${data.message.silver}`);
             }
 
-            const data = await response.json();
+            
             return data;
         } catch (err) {
             console.error("Erreur de login :", err.message);
@@ -27,12 +33,17 @@ class SilverAuth {
         }
     }
 
-    async verify() {
+    async verify(token) {
         try {
-            const response = await fetch('https://auth.silverdium.fr/auth/verify');
+            const response = await fetch('https://auth.silverdium.fr/auth/verify', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cookie': `silvertoken=${token}`
+                },
+            });
 
-            if (!response.ok) {
-                throw new Error(`Erreur verify: ${response.status} ${response.statusText}`);
+            if (response.error) {
+                throw new Error(`Erreur verify : ${response.message.silver}`);
             }
 
             const data = await response.json();
@@ -44,9 +55,8 @@ class SilverAuth {
     }
 
     async register() {
-        console.warn("⚠️ La méthode register() nécessite un navigateur pour ouvrir une nouvelle fenêtre.");
-        console.warn("Utilise cette méthode côté front si tu veux ouvrir une page !");
-    }
+        window.open('https://auth.silverdium.fr/auth/view/register?redirect=close', '_blank');
+    };
 
 }
 
