@@ -10,10 +10,11 @@
 const { AZauth, Mojang } = require('silver-mc-java-core');
 const { ipcRenderer } = require('electron');
 
-import { popup, database, changePanel, accountSelect, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
+import { popup, database, changePanel, accountSelect, SilverAuth, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
+import silverauth from '../utils/silverauth.js';
  
 class Login {
-    static id = "login";
+    static id = "login"; 
     async init(config) {
         console.log('--------------------LOGIN PANEL--------------------');
         this.config = config;
@@ -113,8 +114,9 @@ class Login {
     }
     
 
-    async getAZauth() {
-        console.log('Initializing AZauth login...');
+
+    async getAZauth() { // silverauth
+        console.log('Initializing SilverAuth login...');
         let typeconte = 'AZauth';
         let AZauthClient = new AZauth(this.config.online);
         let PopupLogin = new popup();
@@ -129,11 +131,18 @@ class Login {
         let AZauthCancelA2F = document.querySelector('.cancel-AZauth-A2F');
         let registered = document.querySelector('.register-AZauth');
 
+        let SilverAuthVerify = await SilverAuth.verify();
+
+        if (SilverAuthVerify.valid) {
+            document.querySelector('.play-btn').style.display = 'block';
+            document.querySelector('.play-instance').style.display = 'block';
+            document.querySelector('.play-elements').style.display = 'block';
+            PopupLogin.closePopup();
+            await changePanel('home'); 
+        }
+
         registered.addEventListener('click', async () => {
-            document.getElementById('redirect').style.display = 'block';
-            document.getElementById('redirect').src = `${this.config.online}/user/register`;
-            document.querySelector('.popup').display = 'none';
-            document.querySelector('.panels').display = 'none';
+            SilverAuth.register();
         })
 
         loginAZauth.style.display = 'block';
@@ -147,12 +156,11 @@ class Login {
             });
 
             if (AZauthEmail.value == '' || AZauthPassword.value == '') {
-                PopupLogin.openPopup({
+                return PopupLogin.openPopup({
                     title: 'Erreur',
                     content: 'Veuillez remplir tous les champs.',
                     options: true
                 });
-                return;
             }
 
 
@@ -168,62 +176,21 @@ class Login {
                 } 
             }
 
-            let AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value);
-
-            if (AZauthConnect.error) {
+            let SilverAuthConnect = await SilverAuth.login(AZauthEmail.value, AZauthPassword.value);
+            console.log(SilverAuthConnect)
+            if (SilverAuthConnect.error) {
                 PopupLogin.openPopup({ 
                     title: 'Erreur',
-                    content: AZauthConnect.message,
+                    content: SilverAuthConnect.message.silver,
                     options: true
                 });
                 return;
-            } else if (AZauthConnect.A2F) {
-                loginAZauthA2F.style.display = 'block';
-                loginAZauth.style.display = 'none';
-                PopupLogin.closePopup();
-
-                AZauthCancelA2F.addEventListener('click', () => {
-                    loginAZauthA2F.style.display = 'none';
-                    loginAZauth.style.display = 'block';
-                });
-
-                connectAZauthA2F.addEventListener('click', async () => {
-                    PopupLogin.openPopup({
-                        title: 'Connexion en cours...',
-                        content: 'Veuillez patienter...',
-                        color: 'var(--color)'
-                    });
-
-                    if (AZauthA2F.value == '') {
-                        PopupLogin.openPopup({
-                            title: 'Erreur',
-                            content: 'Veuillez entrer le code A2F.',
-                            options: true
-                        });
-                        return;
-                    }
-
-                    AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value, AZauthA2F.value);
-
-                    if (AZauthConnect.error) {
-                        PopupLogin.openPopup({
-                            title: 'Erreur',
-                            content: AZauthConnect.message,
-                            options: true
-                        });
-                        return;
-                    }
-
-                    await this.saveData(AZauthConnect)
-                    PopupLogin.closePopup();
-                });
-            } else if (!AZauthConnect.A2F) {
+            } else if (SilverAuthConnect.success) {
                 document.querySelector('.play-btn').style.display = 'block';
                 document.querySelector('.play-instance').style.display = 'block';
                 document.querySelector('.play-elements').style.display = 'block';
-                await this.saveData(AZauthConnect)
-
                 PopupLogin.closePopup();
+                await changePanel('home'); 
             }
         });
     }

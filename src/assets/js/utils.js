@@ -18,6 +18,7 @@ import logger from './utils/logger.js';
 import { createFile } from './utils/uninst.js';
 import Date from './utils/date.js';
 import Salert from './utils/alert.js';
+import SilverAuth from './utils/silverauth.js';
 import Dbot  from './dbot.js';
 import popup from './utils/popup.js';
 import { viderDossier } from './utils/viderdossier.js';
@@ -140,6 +141,7 @@ export {
     logger as logger,
     popup as popup,
     Dbot as Dbot,
+    SilverAuth as SilverAuth,
     createFile as createFile,
     setBackground as setBackground,
     skin2D as skin2D,
