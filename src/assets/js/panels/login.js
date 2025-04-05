@@ -137,28 +137,32 @@ class Login {
         const isMac = process.platform === 'darwin';
         const cleint_json_path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/token.json`;
 
-        const client = require(cleint_json_path);
+        if (fs.existsSync(cleint_json_path)) {
+                
+            const client = require(cleint_json_path);
 
-        let SilverAuthVerify = await SilverAuth.verify(client.token);
+            let SilverAuthVerify = await SilverAuth.verify(client.token);
 
-        if (SilverAuthVerify.valid) {
+            if (SilverAuthVerify.valid) {
 
-            const SaccountData = {
-                valid: SilverAuthVerify.valid,
-                token: SilverAuthVerify.token,
-                data: SilverAuthVerify.data.usr_info,
-                sub: SilverAuthVerify.data.sub
-            };
+                const SaccountData = {
+                    valid: SilverAuthVerify.valid,
+                    token: SilverAuthVerify.token,
+                    data: SilverAuthVerify.data.usr_info,
+                    sub: SilverAuthVerify.data.sub
+                };
 
-            await fs.promises.writeFile(cleint_json_path, JSON.stringify(SaccountData, null, 2));
+                await fs.promises.writeFile(cleint_json_path, JSON.stringify(SaccountData, null, 2));
 
-            document.querySelector('.play-btn').style.display = 'block';
-            document.querySelector('.play-instance').style.display = 'block';
-            document.querySelector('.play-elements').style.display = 'block';
-            PopupLogin.closePopup();
-            await addAccount(SaccountData);
-            await accountSelect(SaccountData);
-            await changePanel('home'); 
+                document.querySelector('.play-btn').style.display = 'block';
+                document.querySelector('.play-instance').style.display = 'block';
+                document.querySelector('.play-elements').style.display = 'block';
+                PopupLogin.closePopup();
+                await addAccount(SaccountData);
+                await accountSelect(SaccountData);
+                await changePanel('home'); 
+
+            }
 
         }
 
