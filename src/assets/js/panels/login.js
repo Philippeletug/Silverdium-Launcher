@@ -135,7 +135,8 @@ class Login {
 
         const appDataPath = await appdata();
         const isMac = process.platform === 'darwin';
-        const cleint_json_path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/token.json`;
+        const cleint_json_path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/client.json`;
+
 
         if (fs.existsSync(cleint_json_path)) {
                 
@@ -165,6 +166,7 @@ class Login {
             }
 
         }
+
 
         registered.addEventListener('click', async () => {
             SilverAuth.register();
@@ -241,7 +243,7 @@ class Login {
                 if (!fs.existsSync(Json_Path)) {
                     await fs.promises.mkdir(Json_Path);
                 }
-                await fs.promises.writeFile(`${Json_Path}/token.json`, JSON.stringify(SaccountData, null, 2));
+                await fs.promises.writeFile(`${Json_Path}/client.json`, JSON.stringify(SaccountData, null, 2));
                 
                 this.saveData(SaccountData)
                 
