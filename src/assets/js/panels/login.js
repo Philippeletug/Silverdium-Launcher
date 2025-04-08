@@ -133,39 +133,6 @@ class Login {
         let AZauthCancelA2F = document.querySelector('.cancel-AZauth-A2F');
         let registered = document.querySelector('.register-AZauth');
 
-        const appDataPath = await appdata();
-        const isMac = process.platform === 'darwin';
-        const cleint_json_path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/client.json`;
-
-
-        if (fs.existsSync(cleint_json_path)) {
-                
-            const client = require(cleint_json_path);
-
-            let SilverAuthVerify = await SilverAuth.verify(client.token);
-
-            if (SilverAuthVerify.valid) {
-
-                const SaccountData = {
-                    valid: SilverAuthVerify.valid,
-                    token: SilverAuthVerify.token,
-                    data: SilverAuthVerify.data.usr_info,
-                    sub: SilverAuthVerify.data.sub
-                };
-
-                await fs.promises.writeFile(cleint_json_path, JSON.stringify(SaccountData, null, 2));
-
-                document.querySelector('.play-btn').style.display = 'block';
-                document.querySelector('.play-instance').style.display = 'block';
-                document.querySelector('.play-elements').style.display = 'block';
-                PopupLogin.closePopup();
-                await addAccount(SaccountData);
-                await accountSelect(SaccountData);
-                await changePanel('home'); 
-
-            }
-
-        }
 
 
         registered.addEventListener('click', async () => {
@@ -190,18 +157,6 @@ class Login {
                     content: 'Veuillez remplir tous les champs.',
                     options: true
                 });
-            }
-
-            if (this.config.PASS.value) {
-                if (AZauthEmail.value == this.config.PASS.email || AZauthPassword.value == this.config.PASS.mdp) {
-                    console.log('Connection développeurs')
-                    PopupLogin.closePopup();
-                    changePanel('home');
-                    document.querySelector('.play-btn').style.display = 'none';
-                    document.querySelector('.play-instance').style.display = 'none';
-                    document.querySelector('.play-elements').style.display = 'none';
-                    return;
-                } 
             }
 
             let SILVERAuthConnect = await SilverAuth.login(AZauthEmail.value, AZauthPassword.value);
@@ -244,7 +199,7 @@ class Login {
                     await fs.promises.mkdir(Json_Path);
                 }
                 await fs.promises.writeFile(`${Json_Path}/client.json`, JSON.stringify(SaccountData, null, 2));
-                
+
                 this.saveData(SaccountData)
                 
                 document.querySelector('.play-btn').style.display = 'block';

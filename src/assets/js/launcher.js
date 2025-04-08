@@ -12,21 +12,18 @@ import Home from './panels/home.js';
 import Settings from './panels/settings.js';
 
 // import modules
-import { logger, config, changePanel, database, popup, setBackground, initializeDiscordRPC, accountSelect, addAccount, pkg, appdata, Salert } from './utils.js';
-let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
-let cmds = `${url}/launcher/config-launcher/commands.json`;
-const { AZauth, Microsoft, Mojang } = require('silver-mc-java-core');
+import { logger, config, changePanel, database, popup, setBackground, SilverAuth, initializeDiscordRPC, accountSelect, addAccount, pkg, appdata, Salert, settings } from './utils.js';
 
 // libs
 const { ipcRenderer } = require('electron');
 const fs = require('fs');
-const os = require('os');
 
 let noroll = false;
 
 class Launcher {
     async init() {
         this.initLog();
+        settings.init();
         console.log('--------------------LAUNCHER STARTING--------------------');
         console.log('Initializing Launcher...');
         this.shortcut()
@@ -37,7 +34,7 @@ class Launcher {
         if (await this.config.error) return this.errorConnect()
         console.log('Initializing database...');
         this.db = new database();
-        await this.initConfigClient();
+        // await this.initConfigClient();
         console.log('Initializing panels : (Login, Home, Settings)...');
         this.createPanels(Login, Home, Settings);
         console.log('--------------------LAUNCHER START--------------------');
@@ -47,7 +44,6 @@ class Launcher {
         this.initcmd();
         this.maintenance();
         this.donsvp();
-        this.initvar();
         initializeDiscordRPC();
     }
 
@@ -59,24 +55,6 @@ class Launcher {
             }
         })
         new logger(pkg.loggername, '#f270ff');
-    }
-
-    async initvar() {
-        // require
-        const appDataPath = await appdata();
-        const isMac = process.platform === 'darwin';
-        // var list
-        console.log('------------------INITIALIZING VAR------------------');
-        console.log('-----------------GENERAL-----------------')
-        console.log(`[VAR]: appdata path : ${await appdata()}`);
-        console.log(`[VAR]: silver path : ${process.platform === 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
-        console.log(`[VAR]: .silver? : ${this.config.dataDirectory}`);
-        console.log(`[VAR]: .silver?path : "${await appdata()}/${process.platform === 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/runtime"`);
-        console.log(`[VAR]: one dataDir : ${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
-        console.log(`[VAR]: 45 : ${45}`);
-        console.log(`[VAR]: 45 : ${45}`);
-        console.log(`[VAR]: 45 : ${45}`);
-        console.log(`[VAR]: 45 : ${45}`);
     }
 
     async initcmd() {
@@ -337,39 +315,40 @@ class Launcher {
         })
     }
 
-    async initConfigClient() {
-        console.log('loading initConfigClient function...');
-        console.log('Initializing Config Client...')
-        let configClient = await this.db.readData('configClient')
-        const totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
-        const maxmem = totalMem / 2;
+    // async initConfigClient() {
+    //     console.log('loading initConfigClient function...');
+    //     console.log('Initializing Config Client...')
+        // let configClient = await this.db.readData('configClient')
+        // const totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
+        // const maxmem = totalMem / 2;
 
-        if (!configClient) {
-            await this.db.createData('configClient', {
-                account_selected: null,
-                instance_selct: null,
-                java_config: {
-                    java_path: null,
-                    java_memory: {
-                        min: 2,
-                        max: maxmem
-                    }
-                },
-                game_config: {
-                    screen_size: {
-                        width: 1080,
-                        height: 720
-                    }
-                },
-                launcher_config: {
-                    download_multi: 5,
-                    theme: 'dark',
-                    closeLauncher: 'close-launcher',
-                    intelEnabledMac: true
-                }
-            })
-        }
-    }
+
+        // if (!configClient) {
+        //     await this.db.createData('configClient', {
+        //         account_selected: null,
+        //         instance_selct: null,
+        //         java_config: {
+        //             java_path: null,
+        //             java_memory: {
+        //                 min: 2,
+        //                 max: maxmem
+        //             }
+        //         },
+        //         game_config: {
+        //             screen_size: {
+        //                 width: 1080,
+        //                 height: 720
+        //             }
+        //         },
+        //         launcher_config: {
+        //             download_multi: 5,
+        //             theme: 'dark',
+        //             closeLauncher: 'close-launcher',
+        //             intelEnabledMac: true
+        //         }
+        //     })
+        // }
+    // }
 
     createPanels(...panels) {
         console.log('loading createPanels function...');
@@ -387,138 +366,66 @@ class Launcher {
 
     async startLauncher() {
         console.log('loading startLauncher function...');
-        let accounts = await this.db.readAllData('accounts')
-        let configClient = await this.db.readData('configClient')
-        let account_selected = configClient ? configClient.account_selected : null
-        let popupRefresh = new popup();
-
-        if (accounts?.length) {
-            for (let account of accounts) {
-                let account_ID = account.ID
-                if (account.error) {
-                    await this.db.deleteData('accounts', account_ID)
-                    continue
+    
+        const accounts = await settings.load('ACCOUNT');
+        const appDataPath = await appdata();
+        const isMac = process.platform === 'darwin';
+        const clientJsonPath = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth/client.json`;
+        const popupRefresh = new popup();
+    
+        if (accounts?.valid) {
+            const account = accounts;
+    
+            popupRefresh.openPopup({
+                title: 'Connexion',
+                content: `Refresh account Type: SilverAuth | Username: ${account.data?.name}`,
+                color: 'var(--color)',
+                background: false
+            });
+    
+            try {
+                const refresh_accounts = await SilverAuth.verify(account.token);
+    
+                if (refresh_accounts.valid) {
+                    console.log(`[Account] : Username: ${account.data?.name}  UUID: ${account.data?.dataplus?.UUID}`);
+    
+                    const SaccountData = {
+                        valid: refresh_accounts.valid,
+                        token: refresh_accounts.token,
+                        data: refresh_accounts.data.usr_info,
+                        sub: refresh_accounts.data.sub
+                    };
+    
+                    await fs.promises.writeFile(clientJsonPath, JSON.stringify(SaccountData, null, 2));
+    
+                    // Affichage des éléments de jeu
+                    document.querySelector('.play-btn').style.display = 'block';
+                    document.querySelector('.play-instance').style.display = 'block';
+                    document.querySelector('.play-elements').style.display = 'block';
+    
+                    popupRefresh.closePopup();
+    
+                    await addAccount(SaccountData);
+                    await accountSelect(SaccountData);
+                    await changePanel('home');
+                    return;
+                } else if (refresh_accounts.error) {
+                    console.error(`[Account] ${account.data?.name}: ${refresh_accounts.message}`);
                 }
-                if (account.meta.type === 'Xbox') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
-
-                    let refresh_accounts = await new Microsoft(this.config.client_id).refresh(account);
-
-                    if (refresh_accounts.error) {
-                        await this.db.deleteData('accounts', account_ID)
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            await this.db.updateData('configClient', configClient)
-                        }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.errorMessage}`);
-                        continue;
-                    }
-
-                    refresh_accounts.ID = account_ID
-                    await this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
-                } else if (account.meta.type == 'AZauth') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
-                    let refresh_accounts = await new AZauth(this.config.online).verify(account);
-
-                    if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            this.db.updateData('configClient', configClient)
-                        }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.message}`);
-                        continue;
-                    }
-
-                    refresh_accounts.ID = account_ID
-                    this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
-                } else if (account.meta.type == 'Mojang') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
-                    if (account.meta.online == false) {
-                        let refresh_accounts = await Mojang.login(account.name);
-
-                        refresh_accounts.ID = account_ID
-                        await addAccount(refresh_accounts)
-                        this.db.updateData('accounts', refresh_accounts, account_ID)
-                        if (account_ID == account_selected) accountSelect(refresh_accounts)
-                        continue;
-                    }
-
-                    let refresh_accounts = await Mojang.refresh(account);
-
-                    if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            this.db.updateData('configClient', configClient)
-                        }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.errorMessage}`);
-                        continue;
-                    }
-
-                    refresh_accounts.ID = account_ID
-                    this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
-                } else {
-                    console.error(`[Account] ${account.name}: Account Type Not Found`);
-                    this.db.deleteData('accounts', account_ID)
-                    if (account_ID == account_selected) {
-                        configClient.account_selected = null
-                        this.db.updateData('configClient', configClient)
-                    }
-                }
+    
+            } catch (error) {
+                console.error('Erreur lors de la vérification du compte :', error);
             }
-
-            accounts = await this.db.readAllData('accounts')
-            configClient = await this.db.readData('configClient')
-            account_selected = configClient ? configClient.account_selected : null
-
-            if (!account_selected) {
-                let uuid = accounts[0].ID
-                if (uuid) {
-                    configClient.account_selected = uuid
-                    await this.db.updateData('configClient', configClient)
-                    accountSelect(uuid)
-                }
-            }
-
-            if (!accounts.length) {
-                config.account_selected = null
-                await this.db.updateData('configClient', config);
-                popupRefresh.closePopup()
-                return changePanel("login");
-            }
-
-            popupRefresh.closePopup()
+    
+            popupRefresh.closePopup();
             changePanel("home");
+    
         } else {
-            popupRefresh.closePopup()
+            popupRefresh.closePopup();
             changePanel('login');
         }
     }
+    
 }
 
 new Launcher().init();

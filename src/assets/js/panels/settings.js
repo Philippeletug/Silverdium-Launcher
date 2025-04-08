@@ -7,12 +7,10 @@
  * @author Mister Papaye
  */
 
-import { changePanel, accountSelect, viderDossier, database, Slider, config, setStatus, popup, appdata, setBackground, Salert } from '../utils.js'
-const { ipcRenderer } = require('electron');
+import { changePanel, viderDossier, database, Slider, config, setStatus, popup, appdata, Salert, settings } from '../utils.js'
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const confetti = require('canvas-confetti')
 
 class Settings {
     static id = "settings";
@@ -21,7 +19,6 @@ class Settings {
         console.log('loading settings panel...');
         this.config = config;
         this.db = new database();
-        this.loadSetting();
         this.navBTN()
         this.accounts()
         this.ram() 
@@ -30,95 +27,6 @@ class Settings {
         this.launcher()
     }
 
-    async initSetting() {
-
-        const appDataPath = await appdata();
-        const isMac = process.platform === 'darwin';
-        const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
-        
-        if (!fs.existsSync(Json_Path)) {
-            await fs.promises.mkdir(Json_Path);
-        }
-
-        let data = {
-            MaxRAM: 2,
-            MinRAM: 6,
-            Download_File: 5,
-            Close_Launcher: "close-launcher"
-        }
-
-        if (!fs.existsSync(Json_Path + '/setting.json')) {
-            await fs.promises.writeFile(`${Json_Path}/setting.json`, JSON.stringify(data))
-        }
-
-    }
-
-    async saveSetting(type, arg1, arg2) {
-
-        const appDataPath = await appdata();
-        const isMac = process.platform === 'darwin';
-        const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
-        
-        if (!fs.existsSync(Json_Path)) {
-            await fs.promises.mkdir(Json_Path);
-        }
-
-        let data = await fs.promises.readFile(`${Json_Path}/setting.json`, 'utf8');
-
-        data = JSON.parse(data) 
-
-        if (type == 'RAM') {
-            
-            data = {
-                MaxRAM: arg2,
-                MinRAM: arg1,
-                Download_File: data.Download_File || 5,
-                Close_Launcher: data.Close_Launcher || "close-launcher"
-            } 
-
-        }
-
-        else if (type == 'DF') {
-
-            data = {
-                MaxRAM: data.MaxRAM || null,
-                MinRAM: data.MinRAM || null,
-                Download_File: parseFloat(arg1),
-                Close_Launcher: data.Close_Launcher || "close-launcher"
-            }
- 
-        }
-
-        else if (type == 'CL') {
-
-            data = {
-                MaxRAM: data.MaxRAM || null,
-                MinRAM: data.MinRAM || null,
-                Download_File: data.Download_File || 5,
-                Close_Launcher: arg1
-            }
-
-        }
-
-        else {
-            console.error('Type de setting a save mal défini : ' + type);
-        };
-
-        await fs.promises.writeFile(`${Json_Path}/setting.json`, JSON.stringify(data))
-
-    }
- 
-    async loadSetting() {
-
-        const appDataPath = await appdata();
-        const isMac = process.platform === 'darwin';
-        const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
-    
-        const data = await fs.promises.readFile(`${Json_Path}/setting.json`, 'utf8')
-
-        return JSON.parse(data);
-
-    }
 
     navBTN() {
         console.log('loading navBTN function...');
@@ -132,10 +40,10 @@ class Settings {
 
                 if (id == 'save') {
                     if (activeSettingsBTN) activeSettingsBTN.classList.toggle('active-settings-BTN');
-                    document.querySelector('#account').classList.add('active-settings-BTN');
+                    document.querySelector('#launcher').classList.add('active-settings-BTN');
 
                     if (activeContainerSettings) activeContainerSettings.classList.toggle('active-container-settings');
-                    document.querySelector(`#account-tab`).classList.add('active-container-settings');
+                    document.querySelector(`#launcher-tab`).classList.add('active-container-settings');
                     return changePanel('home')
                 }
 
@@ -181,7 +89,13 @@ class Settings {
                         content: 'Veuillez patienter...',
                         color: 'var(--color)'
                     })
-                    await this.db.deleteData('accounts', id);
+
+                    await settings.save('ACCOUNT', null);
+                    const appDataPath = await appdata();
+                    const isMac = process.platform === 'darwin';
+                    const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;    
+                    await fs.rm(`${Json_Path}/client.json`);
+                                   
                     let deleteProfile = document.getElementById(`${id}`);
                     let accountListElement = document.querySelector('.accounts-list');
                     accountListElement.removeChild(deleteProfile);
@@ -208,8 +122,9 @@ class Settings {
     }
 
     async setInstance(auth) {
+
         console.log('loading setInstance async function...');
-        let configClient = await this.db.readData('configClient')
+        let configClient = await settings.load();
         let instanceSelect = configClient.instance_selct
         let instancesList = await config.getInstanceList()
 
@@ -226,11 +141,12 @@ class Settings {
             }
         }
         return configClient
+
     }
 
     async ram() {
         console.log('loading ram async function...');
-        let setting = await this.loadSetting();
+        let setting = await settings.load();
         let config = await this.db.readData('configClient');
         let totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
         // Fonction n'est pas representative
@@ -259,9 +175,7 @@ class Settings {
 
         slider.on("change", async (min, max) => {
 
-            let config = await this.db.readData('configClient');
-
-            this.saveSetting('RAM', min, max);
+            settings.save('RAM', min, max);
 
             minSpan.setAttribute("value", `${min} Go`);
             maxSpan.setAttribute("value", `${max} Go`);
@@ -282,11 +196,6 @@ class Settings {
             javaPathInputTxt.value = javaPath;
     
             document.querySelector(".java-path-set").addEventListener("click", async () => {
-                confetti({
-                    particleCount: 100,
-                    spread: 80,
-                    origin: { x: 0.5, y: 0.8 }
-                }); 
                 javaPathInputFile.value = '';
                 javaPathInputFile.click();
     
@@ -306,11 +215,6 @@ class Settings {
             });
     
             document.querySelector(".java-path-reset").addEventListener("click", async () => {
-                confetti({
-                    particleCount: 100,
-                    spread: 80,
-                    origin: { x: 0.5, y: 0.8 }
-                }); 
                 configClient = await this.db.readData('configClient');
                 javaPathInputTxt.value = 'Utiliser la version de java livré avec le launcher';
                 configClient.java_config.java_path = null;
@@ -318,7 +222,6 @@ class Settings {
             });
         } catch (err) {
             console.error("Erreur lors de l'éxécution de javaPath.", err);
-            console.log(`[VAR]: javaPathText.textContent : "${javaPathText.textContent}"`);
         }
     }
     
@@ -326,7 +229,7 @@ class Settings {
     async resolution() {
         console.log('loading resolution async function...');
         let configClient = await this.db.readData('configClient')
-        let resolution = configClient?.game_config?.screen_size || { width: 1920, height: 1080 };
+        let resolution = configClient?.game_config?.screen_size || { width: 1080, height: 720 };
 
         let width = document.querySelector(".width-size");
         let height = document.querySelector(".height-size");
@@ -336,33 +239,18 @@ class Settings {
         height.value = resolution.height;
 
         width.addEventListener("change", async () => {
-            confetti({
-                particleCount: 100,
-                spread: 80,
-                origin: { x: 0.5, y: 0.8 }
-            }); 
             let configClient = await this.db.readData('configClient')
             configClient.game_config.screen_size.width = width.value;
             await this.db.updateData('configClient', configClient);
         })
 
         height.addEventListener("change", async () => {
-            confetti({
-                particleCount: 100,
-                spread: 80,
-                origin: { x: 0.5, y: 0.8 }
-            }); 
             let configClient = await this.db.readData('configClient')
             configClient.game_config.screen_size.height = height.value;
             await this.db.updateData('configClient', configClient);
         })
 
         resolutionReset.addEventListener("click", async () => {
-            confetti({
-                particleCount: 100,
-                spread: 80,
-                origin: { x: 0.5, y: 0.8 }
-            }); 
             let configClient = await this.db.readData('configClient')
             configClient.game_config.screen_size = { width: '1080', height: '720' };
             width.value = '1080';
@@ -373,8 +261,7 @@ class Settings {
 
     async launcher() {
         console.log('loading launcher async function...');
-        let configClient = await this.db.readData('configClient');
-        let setting = await this.loadSetting();
+        let setting = await settings.load();
 
         let maxDownloadFiles = setting?.Download_File || 5;
         let maxDownloadFilesInput = document.querySelector(".max-files");
@@ -430,38 +317,15 @@ class Settings {
                 console.error(error.stack);
             }
         });
-        
-        // Fonction non terminer
-// uninstbtn.addEventListener("click", async () => {
-//     console.warn('!! [UNINST]: Chargement de la procédure de désinstallation... !!');
-//     console.warn('!! [UNINST]: Demande de confirmation... !!');
 
-//     // Demander confirmation à l'utilisateur
-//     const uninstConfirm = confirm('Êtes-vous sûr de désinstaller \nce magnifique launcher de Silverdium ?');
-//     if (uninstConfirm) {
-//         console.warn('!! [UNINST]: Demande de confirmation ACCEPTEE !!');
-//         console.warn('!! [UNINST]: Lancement de la procédure de désinstallation... !!');
-//         alert('[UNINS]: \nLancement de la procédure de désinstallation...');
-
-//         const config = {
-//             dataDirectory: (await ipcRenderer.invoke('appData').then(path => path))
-//         };
-
-//         await createFile(config);
-//     } else {
-//         console.warn('!! [UNINST]: Demande de confirmation DECLINEE !!');
-//         console.warn('!! [UNINST]: Arrêt de la procédure de désinstallation... !!');
-//         alert('[UNINS]: \nProcédure de désinstallation arrêtée.');
-//     }
-// });
 
 
         maxDownloadFilesInput.addEventListener("change", async () => {
-            await this.saveSetting('DF', maxDownloadFilesInput.value);
+            await settings.save('DF', maxDownloadFilesInput.value);
         })
 
         maxDownloadFilesReset.addEventListener("click", async () => {
-            await this.saveSetting('DF', 5);
+            await settings.save('DF', 5);
         })
 
         // fonction désactivé en front
@@ -476,34 +340,34 @@ class Settings {
         //     document.querySelector('.theme-btn-clair').classList.add('active-theme');
         // }
 
-        themeBox.addEventListener("click", async e => {
-            if (e.target.classList.contains('theme-btn')) {
-                let activeTheme = document.querySelector('.active-theme');
-                if (e.target.classList.contains('active-theme')) return
-                activeTheme?.classList.remove('active-theme');
+        // themeBox.addEventListener("click", async e => {
+        //     if (e.target.classList.contains('theme-btn')) {
+        //         let activeTheme = document.querySelector('.active-theme');
+        //         if (e.target.classList.contains('active-theme')) return
+        //         activeTheme?.classList.remove('active-theme');
 
-                if (e.target.classList.contains('theme-btn-auto')) {
-                    setBackground();
-                    theme = "auto";
-                    e.target.classList.add('active-theme');
-                } else if (e.target.classList.contains('theme-btn-sombre')) {
-                    setBackground(true);
-                    theme = "dark";
-                    e.target.classList.add('active-theme');
-                } else if (e.target.classList.contains('theme-btn-clair')) {
-                    setBackground(false);
-                    theme = "light";
-                    e.target.classList.add('active-theme');
-                }
+        //         if (e.target.classList.contains('theme-btn-auto')) {
+        //             setBackground();
+        //             theme = "auto";
+        //             e.target.classList.add('active-theme');
+        //         } else if (e.target.classList.contains('theme-btn-sombre')) {
+        //             setBackground(true);
+        //             theme = "dark";
+        //             e.target.classList.add('active-theme');
+        //         } else if (e.target.classList.contains('theme-btn-clair')) {
+        //             setBackground(false);
+        //             theme = "light";
+        //             e.target.classList.add('active-theme');
+        //         }
 
-                let configClient = await this.db.readData('configClient')
-                configClient.launcher_config.theme = theme;
-                await this.db.updateData('configClient', configClient);
-            }
-        })
+        //         let configClient = await this.db.readData('configClient')
+        //         configClient.launcher_config.theme = theme;
+        //         await this.db.updateData('configClient', configClient);
+        //     }
+        // })
 
         let closeBox = document.querySelector(".close-box");
-        let closeLauncher = setting?.Close_Launcher || "close-launcher";
+        let closeLauncher = setting?.Close_Launcher;
 
         if (closeLauncher == "close-launcher") {
             document.querySelector('.close-launcher').classList.add('active-close');
@@ -521,13 +385,13 @@ class Settings {
 
                 if (e.target.classList.contains('close-launcher')) {
                     e.target.classList.toggle('active-close');
-                    await this.saveSetting('CL', "close-launcher");
+                    await settings.save('CL', "close-launcher");
                 } else if (e.target.classList.contains('close-all')) {
                     e.target.classList.toggle('active-close');
-                    await this.saveSetting('CL', "close-all");
+                    await settings.save('CL', "close-all");
                 } else if (e.target.classList.contains('close-none')) {
                     e.target.classList.toggle('active-close');
-                    await this.saveSetting('CL', "close-none");
+                    await settings.save('CL', "close-none");
                 }
             }
         })

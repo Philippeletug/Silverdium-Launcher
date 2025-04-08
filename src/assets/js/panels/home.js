@@ -7,7 +7,7 @@
  * @author Mister Papaye
  */
 
-import { config, database, logger, changePanel, appdata, setStatus, pkg, popup } from '../utils.js';
+import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, settings } from '../utils.js';
 
 const { Launch } = require('silver-mc-java-core')
 const { shell, ipcRenderer } = require('electron')
@@ -24,11 +24,6 @@ class Home {
         this.socialLick()
         this.instancesSelect()
         document.querySelector('.settings-btn').addEventListener('click', e => {
-            confetti({
-                particleCount: 100,
-                spread: 80,
-                origin: { x: 0.5, y: 0.8 }
-            }); 
             changePanel('settings')
         })
     }
@@ -112,17 +107,7 @@ class Home {
         const socials = document.querySelectorAll('.social-block');
 
         socials.forEach(social => {
-            confetti({
-                particleCount: 160,
-                spread: 160,
-                origin: { x: 0.5, y: 0.8 }
-            }); 
             social.addEventListener('click', e => {
-                confetti({
-                    particleCount: 100,
-                    spread: 80,
-                    origin: { x: 0.5, y: 0.8 }
-                });
                 
                 shell.openExternal(e.target.dataset.url)
             })
@@ -131,9 +116,9 @@ class Home {
 
     async instancesSelect() {
         console.log('loading instancesSelect async function...');
-        let configClient = await this.db.readData('configClient')
-        let auth = await this.db.readData('accounts', configClient.account_selected)
-        let instancesList = await config.getInstanceList()
+        let configClient = await settings.load();
+        let auth = await settings.load('ACCOUNT');
+        let instancesList = await config.getInstanceList();
         let instanceSelect = instancesList.find(i => i.name == configClient?.instance_selct) ? configClient?.instance_selct : null
 
         let instanceBTN = document.querySelector('.play-instance')
@@ -147,25 +132,27 @@ class Home {
         }
 
         if (!instanceSelect) {
+
             let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-            let configClient = await this.db.readData('configClient')
-            configClient.instance_selct = newInstanceSelect.name
-            instanceSelect = newInstanceSelect.name
-            await this.db.updateData('configClient', configClient)
+            setStatus(newInstanceSelect.status)
+            await settings.save('INSTANCE', newInstanceSelect.name)
+
         }
 
         for (let instance of instancesList) {
             if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == auth?.name)
-                if (whitelist !== auth?.name) {
+                let whitelist = instance.whitelist.find(whitelist => whitelist == auth?.data?.name)
+
+                if (whitelist !== auth?.data?.name) {
+
                     if (instance.name == instanceSelect) {
+
                         let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        let configClient = await this.db.readData('configClient')
-                        configClient.instance_selct = newInstanceSelect.name
-                        instanceSelect = newInstanceSelect.name
                         setStatus(newInstanceSelect.status)
-                        await this.db.updateData('configClient', configClient)
+                        await settings.save('INSTANCE', newInstanceSelect.name)
+
                     }
+
                 }
             } else console.log(`Initializing instance ${instance.name}...`)
             if (instance.name == instanceSelect) setStatus(instance.status)
@@ -234,20 +221,22 @@ class Home {
     }
 
     async startGame() {
+
         console.log('loading startGame async function...');
         console.log('Launching game...');
+
         let launch = new Launch()
-        let configClient = await this.db.readData('configClient')
-        let instance = await config.getInstanceList()
-        let authenticator = await this.db.readData('accounts', configClient.account_selected)
-        let options = instance.find(i => i.name == configClient.instance_selct)
+        let configClient = await settings.load();
+        let instance = await config.getInstanceList();
+        let authenticator = await settings.load('ACCOUNT');
+        let options = instance.find(i => i.name == configClient.instance_selct);
 
         let playInstanceBTN = document.querySelector('.play-instance')
         let infoStartingBOX = document.querySelector('.info-starting-game')
         let infoStarting = document.querySelector(".info-starting-game-text")
         let progressBar = document.querySelector('.progress-bar')
 
-        const MaxRam = configClient.java_config.java_memory.max * 1024;
+        const MaxRam = configClient.MaxRAM * 1024;
         const AroundMaxRam = Math.floor(MaxRam);
 
         console.log(`loading config.dataDirectory in : ${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
