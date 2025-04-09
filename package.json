@@ -1,7 +1,7 @@
 {
     "name": "silverdium-launcher",
     "preductname": "Silverdium Launcher",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "description": "Le meilleur launcher pour le meilleur serveur minecraft Silverdium",
     "main": "src/app.js",
     "author": {
@@ -19,6 +19,7 @@
     "releasetype": "release",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
+        "client": "electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
         "build": "node build.js --obf=true --build=platform",
         "icon": "node build.js --icon=https://api.silverdium.fr/dium/launcher/icon.png"

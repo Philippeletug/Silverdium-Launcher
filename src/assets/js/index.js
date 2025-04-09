@@ -15,27 +15,37 @@ const nodeFetch = require("node-fetch");
 
 
 class Splash {
+
     constructor() {
-        this.splash = document.querySelector(".splash");
-        this.splashMessage = document.querySelector(".splash-message");
-        this.splashAuthor = document.querySelector(".splash-author");
-        this.message = document.querySelector(".message");
-        this.progress = document.querySelector(".progress");
-        document.addEventListener('DOMContentLoaded', async () => {
-            let theme = 'dark global'
-            let isDarkTheme = await ipcRenderer.invoke('is-dark-theme', theme).then(res => res)
-            document.body.className = isDarkTheme ? 'dark global' : 'light global';
+
+        console.log('Chargement de update window');
+        
+        // document.addEventListener('DOMContentLoaded', () => {
+
+            this.splash = document.querySelector(".splash");
+            this.splashMessage = document.querySelector(".splash-message");
+            this.splashAuthor = document.querySelector(".splash-author");
+            this.message = document.querySelector(".message");
+            this.progress = document.querySelector(".progress");
+
+            document.body.className = 'dark global';
             if (process.platform == 'win32') ipcRenderer.send('update-window-progress-load')
             this.startAnimation()
-        });
+
+        // });
+
     }
 
     async startAnimation() {
-        const popups = require('https://transfer.silverdium.fr/popups.js');
-        let splashes = popups;
-
+        let splashes = [
+            { "message": "Kind of dragon free! ", "author": "Notch" },
+            { "message": "Les distribution Linux sont sécurisé.", "author": "Papaye" },
+            { "message": "Les distribution Linux sont légere.", "author": "Papaye" },
+            { "message": "La parole est d’or mais le silence sur vos données est d’argent.", "author": "pockettwist9" }
+        ];
         let splash = splashes[Math.floor(Math.random() * splashes.length)];
-        this.splashMessage.textContent = splash;
+        this.splashMessage.textContent = splash.message;
+        this.splashAuthor.children[0].textContent = "@" + splash.author;
         await sleep(100);
         document.querySelector("#splash").style.display = "block";
         await sleep(500);
@@ -43,6 +53,7 @@ class Splash {
         await sleep(500);
         this.splash.classList.add("translate");
         this.splashMessage.classList.add("opacity");
+        this.splashAuthor.classList.add("opacity");
         this.message.classList.add("opacity");
         await sleep(1000);
         this.checkUpdate();
@@ -179,4 +190,6 @@ document.addEventListener("keydown", (e) => {
         ipcRenderer.send("update-window-dev-tools");
     }
 })
+
+
 new Splash();
