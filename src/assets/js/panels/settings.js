@@ -22,7 +22,7 @@ class Settings {
         this.navBTN()
         this.accounts()
         this.ram() 
-        this.javaPath()
+        //this.javaPath()
         this.resolution()
         this.launcher()
     }
@@ -85,7 +85,7 @@ class Settings {
 
                 if (e.target.classList.contains("delete-profile")) {
                     popupAccount.openPopup({
-                        title: 'Connexion',
+                        title: 'déconnexion',
                         content: 'Veuillez patienter...',
                         color: 'var(--color)'
                     })
@@ -100,18 +100,8 @@ class Settings {
                     let accountListElement = document.querySelector('.accounts-list');
                     accountListElement.removeChild(deleteProfile);
 
-                    if (accountListElement.children.length == 1) return changePanel('login');
+                    return changePanel('login');
 
-                    let configClient = await this.db.readData('configClient');
-
-                    if (configClient.account_selected == id) {
-                        let allAccounts = await this.db.readAllData('accounts');
-                        configClient.account_selected = allAccounts[0].ID
-                        accountSelect(allAccounts[0]);
-                        let newInstanceSelect = await this.setInstance(allAccounts[0]);
-                        configClient.instance_selct = newInstanceSelect.instance_selct
-                        return await this.db.updateData('configClient', configClient);
-                    }
                 }
             } catch (err) {
                 console.error(err)
@@ -183,7 +173,7 @@ class Settings {
         });
     }    
 
-    async javaPath() {
+    async javaPath() { // désactivé
         console.log('loading javaPath async function...');
         try {
             let javaPathText = document.querySelector(".java-path-txt")
@@ -284,6 +274,7 @@ class Settings {
         codeconfbtn.addEventListener("click", async () => {
             console.log('Affichage du code de confirmation');
             Salert('Silverdium Launcher', `<h3>Code de confirmation :<br>${this.config.codeconf}</h3>`, 'info', true, false);
+            
         });
 
         restorbtn.addEventListener("click", async () => {

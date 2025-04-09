@@ -9,9 +9,9 @@
 
 import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, settings } from '../utils.js';
 
-const { Launch } = require('silver-mc-java-core')
-const { shell, ipcRenderer } = require('electron')
-const confetti = require('canvas-confetti')
+const { Launch } = require('silver-mc-java-core');
+const { shell, ipcRenderer } = require('electron');
+const fs = require('fs');
 
 class Home {
     static id = "home";
@@ -22,6 +22,7 @@ class Home {
         this.db = new database();
         this.news()
         this.socialLick()
+        this.player_opt();
         this.instancesSelect()
         document.querySelector('.settings-btn').addEventListener('click', e => {
             changePanel('settings')
@@ -114,6 +115,90 @@ class Home {
         });
     }
 
+    async player_opt() {
+
+        const player_head = document.querySelector('.player-options');
+
+        player_head.addEventListener('click', async () => {
+
+            let popupAccount = new popup()
+
+            let popup_profile_content = 
+            `
+                <div class="profile-menu">
+
+                    <div>
+
+                        <img id="pp" src="https://auth.silverdium.fr/api/skin/view/pp/default" alt="photo de profile">
+                        
+                        <ul>
+
+                            <li id="pseudo">Pseudo</li>
+                            <li id="email">Email</li>
+                            <li id="uuid">UUID</li>
+
+                        </ul>
+
+                    </div>
+
+                    <div>
+
+                        <button class="profile-btn">Profile</button>
+                        <button class="logout-btn">Se déconecter</button>
+
+                    </div>
+
+                </div>
+            `
+
+            popupAccount.openPopup({
+                title: 'Mon profile',
+                content: popup_profile_content,
+                color: 'var(--color)',
+                options: true
+            })
+
+            let user = await settings.load('ACCOUNT');
+            const pseudo_input = document.getElementById('pseudo');
+            const email_input = document.getElementById('email');
+            const uuid_input = document.getElementById('uuid');
+            const pp_img = document.getElementById('pp');
+            const logount_btn = document.querySelector('.logout-btn');
+            const profile_btn = document.querySelector('.profile-btn');
+    
+            if (user?.valid) {
+                pp_img.src = 'https://' + user.data?.dataplus?.url?.pp + '/' + user.data?.name;
+                pseudo_input.innerHTML = 'Pseudo : <span>' + user.data?.name + ' </span>';
+                email_input.innerHTML = 'Email : <span>' + user.data?.email + ' </span>';
+                uuid_input.innerHTML = 'UUID : <span>' + user.data?.dataplus?.UUID + ' </span>';
+            }
+
+            profile_btn.addEventListener('click', () => {
+                shell.openExternal('https://auth.silverdium.fr/user/profile?from=silverdium_launcher');
+            });
+
+            logount_btn.addEventListener('click', async () => {
+
+                    popupAccount.openPopup({
+                        title: 'Déconnexion',
+                        content: 'Veuillez patienter...',
+                        color: 'var(--color)'
+                    })
+
+                    await settings.save('ACCOUNT', null);
+                    const appDataPath = await appdata();
+                    const isMac = process.platform === 'darwin';
+                    const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;    
+                    await fs.rm(`${Json_Path}/client.json`);
+
+                    return changePanel('login');
+
+            });
+
+        });
+
+    };
+
     async instancesSelect() {
         console.log('loading instancesSelect async function...');
         let configClient = await settings.load();
@@ -159,42 +244,36 @@ class Home {
         }
 
         instancePopup.addEventListener('click', async e => {
-            let configClient = await this.db.readData('configClient')
 
             if (e.target.classList.contains('instance-elements')) {
-                let newInstanceSelect = e.target.id
-                let activeInstanceSelect = document.querySelector('.active-instance')
+                let newInstanceSelect = e.target.id;
+                let activeInstanceSelect = document.querySelector('.active-instance');
 
                 if (activeInstanceSelect) activeInstanceSelect.classList.toggle('active-instance');
                 e.target.classList.add('active-instance');
 
-                configClient.instance_selct = newInstanceSelect
-                await this.db.updateData('configClient', configClient)
-                instanceSelect = instancesList.filter(i => i.name == newInstanceSelect)
-                instancePopup.style.display = 'none'
-                let instance = await config.getInstanceList()
-                let options = instance.find(i => i.name == configClient.instance_selct)
-                await setStatus(options.status)
-            }
-        })
+                configClient.instance_selct = newInstanceSelect;
+                await settings.save('INSTANCE', newInstanceSelect);
+                instanceSelect = instancesList.filter(i => i.name == newInstanceSelect);
+                instancePopup.style.display = 'none';
+                let instance = await config.getInstanceList();
+                let options = instance.find(i => i.name == configClient.instance_selct);
+                await setStatus(options.status);
+            };
+
+        });
 
         instanceBTN.addEventListener('click', async e => {
-            let configClient = await this.db.readData('configClient')
-            let instanceSelect = configClient.instance_selct
-            let auth = await this.db.readData('accounts', configClient.account_selected)
-
-            confetti({
-                particleCount: 150,
-                spread: 80,
-                origin: { x: 0.5, y: 0.9 }
-            }); 
+            let configClient = await settings.load();
+            let instanceSelect = configClient.instance_selct;
+            let auth = await settings.load('ACCOUNT');
 
             if (e.target.classList.contains('instance-select')) {
                 instancesListPopup.innerHTML = ''
                 for (let instance of instancesList) {
                     if (instance.whitelistActive) {
                         instance.whitelist.map(whitelist => {
-                            if (whitelist == auth?.name) {
+                            if (whitelist == auth?.data?.name) {
                                 if (instance.name == instanceSelect) {
                                     instancesListPopup.innerHTML += `<div id="${instance.name}" class="instance-elements active-instance">${instance.name}</div>`
                                 } else {
@@ -242,7 +321,7 @@ class Home {
         console.log(`loading config.dataDirectory in : ${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
         let opt = {
             url: options.url,
-            authenticator: authenticator,
+            authenticator: authenticator?.data,
             timeout: 10000,          
             path: `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`,
             instance: options.name,
@@ -274,7 +353,7 @@ class Home {
             },
 
             memory: {
-                min: `${configClient.java_config.java_memory.min * 1024}M`,
+                min: `${configClient.MinRAM * 1024}M`,
                 max: `${AroundMaxRam}M`
             }
         }
@@ -325,7 +404,7 @@ class Home {
 
         launch.on('data', (e) => {
             progressBar.style.display = "none"
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient.Close_Launcher == 'close-launcher') {
                 ipcRenderer.send("main-window-hide")
             };
             new logger(`${pkg.mcloggername}`, '#36b030'); 
@@ -336,7 +415,7 @@ class Home {
 
         launch.on('close', code => {
             console.log('Arret du jeux.');
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient.Close_Launcher == 'close-launcher') {
                 ipcRenderer.send("main-window-show")
             };
             ipcRenderer.send('main-window-progress-reset')
@@ -357,7 +436,7 @@ class Home {
                 options: true
             })
 
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient.Close_Launcher == 'close-launcher') {
                 ipcRenderer.send("main-window-show")
             };
             ipcRenderer.send('main-window-progress-reset')

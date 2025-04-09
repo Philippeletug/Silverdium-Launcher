@@ -7,10 +7,9 @@ const pkg = require('../package.json');
 const nodeFetch = require("node-fetch");
 const convert = require('xml-js');
 let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
-let api = pkg.api
 
-let config = `${api}/config.json`;
-let news = `${api}/news.json`;
+let config = `https://silverdium.fr/api/launcher/config?key=cc85e642e9a34c082dce93fb857ee8fe36e4f9e5acd2e316168e9c652b2ec760`;
+let news = `https://silverdium.fr/api/launcher/news?key=cc85e642e9a34c082dce93fb857ee8fe36e4f9e5acd2e316168e9c652b2ec760`;
 
 class Config {
     GetConfig() {
@@ -36,10 +35,6 @@ class Config {
             instancesList.push(instance)
         }
         return instancesList
-    }
-
-    getCmds() {
-        console.log('')
     }
 
     async getNews() {

@@ -234,6 +234,7 @@
 .player-options {
     display: flex;
     justify-content: space-between;
+    cursor: pointer;
     align-items: center;
     border-radius: 15px;
     height: 3rem;
@@ -251,11 +252,6 @@
     border-radius: 15px;
 }
 
-.player-menu {
-    color: var(--element-color);
-    transform: rotate(270deg);
-    pointer-events: none;
-}
 
 .play-elements {
     display: flex;
@@ -423,3 +419,121 @@
 .active-instance {
     background: var(--element-color);
 }
+
+
+/*******************************************************************************
+ *                                                                             *
+ * Profile                                                                     *
+ *                                                                             *
+ ******************************************************************************/
+
+
+.profile-menu div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.profile-menu div ul {
+    list-style: none;
+}
+
+.profile-menu div img {
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    margin-right: -1rem;
+}
+
+.profile-menu div ul li {
+    color: var(--element-color);
+}
+
+.profile-menu div ul li span {
+    color: var(--color);
+}
+
+/* From Uiverse.io by portseif */ 
+.logout-btn {
+    background-color: #ee3f3fe1;
+    border: 1px solid rgb(209, 213, 219);
+    border-radius: 0.5rem;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+  }
+  
+  .logout-btn:hover {
+    background-color: #ff0000e1;
+  }
+  
+  .logout-btn:focus {
+    outline: 2px solid rgba(0, 0, 0, 0.1);
+    outline-offset: 2px;
+  }
+  
+  .logout-btn:focus-visible {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  
+
+  /* From Uiverse.io by JaydipPrajapati1910 */ 
+.profile-btn {
+    color: white;
+    background-color: #222;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    line-height: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    cursor: pointer;
+    text-align: center;
+    margin-right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+  }
+  
+  .profile-btn:hover {
+    background-color: #333;
+  }
+  
+  .profile-btn svg {
+    display: inline;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-right: 0.75rem;
+    color: white;
+  }
+  
+  .profile-btn:focus svg {
+    animation: spin_357 0.5s linear;
+  }
+  
+  @keyframes spin_357 {
+    from {
+      transform: rotate(0deg);
+    }
+  
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  

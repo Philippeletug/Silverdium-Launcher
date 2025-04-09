@@ -18,7 +18,7 @@ import logger from './utils/logger.js';
 import { createFile } from './utils/uninst.js';
 import Date from './utils/date.js';
 import setting from './utils/settings_db.js';
-let Setting = new setting(appdata, await config.GetConfig().then(res => res).catch(err => err));
+const Setting = new setting(appdata, await config.GetConfig().then(res => res).catch(err => err));
 import Salert from './utils/alert.js';
 import SilverAuth from './utils/silverauth.js';
 import Dbot  from './dbot.js';
@@ -68,7 +68,7 @@ async function appdata() {
 
 
 async function addAccount(data) {
-    const skinUrl = data.data?.dataplus?.url?.head + '/' + data.data.name;
+    const skinUrl = data.data?.dataplus?.url?.skin?.head + '/' + data.data.name;
     let div = document.createElement("div");
     div.classList.add("account");
     div.id = data.data.userId;
@@ -91,7 +91,6 @@ async function addAccount(data) {
 async function accountSelect(data) {
     let account = document.getElementById(`${data.data.userId}`);
     let activeAccount = document.querySelector('.account-select');
-    Setting.save('ACCOUNT', data.data.UUID)
 
     if (activeAccount) activeAccount.classList.remove('account-select');
     account.classList.add('account-select');

@@ -407,6 +407,7 @@ class Launcher {
     
                     await addAccount(SaccountData);
                     await accountSelect(SaccountData);
+                    await settings.save('ACCOUNT', SaccountData.data.UUID)
                     await changePanel('home');
                     return;
                 } else if (refresh_accounts.error) {

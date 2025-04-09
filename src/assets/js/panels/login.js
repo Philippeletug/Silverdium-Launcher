@@ -12,8 +12,7 @@ const { ipcRenderer, session } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-import { popup, database, changePanel, accountSelect, SilverAuth, appdata, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
-import silverauth from '../utils/silverauth.js';
+import { popup, database, changePanel, settings, accountSelect, SilverAuth, appdata, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
  
 class Login {
     static id = "login"; 
@@ -216,6 +215,7 @@ class Login {
 
         await addAccount(connectionData);
         await accountSelect(connectionData);
+        await settings.save('ACCOUNT', connectionData.data.UUID)
         await changePanel('home'); 
 
     }

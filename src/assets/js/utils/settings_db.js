@@ -32,6 +32,9 @@ class setting {
                 Close_Launcher: "close-launcher",
                 instance_selct: null,
                 account_selected: null,
+                java_config: {
+                    java_path: `${await this.appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/runtime`
+                },
                 game_config: {
                     screen_size: {
                         width: 1080,
@@ -66,6 +69,9 @@ class setting {
                 Close_Launcher: data.Close_Launcher || "close-launcher",
                 instance_selct: data.instance_selct,
                 account_selected: data.account_selected || null,
+                java_config: {
+                    java_path: data.java_config.java_path
+                },
                 game_config: {
                     screen_size: {
                         width: data.game_config.screen_size.width || 1080,
@@ -85,6 +91,9 @@ class setting {
                 Close_Launcher: data.Close_Launcher || "close-launcher",
                 instance_selct: data.instance_selct,
                 account_selected: data.account_selected || null,
+                java_config: {
+                    java_path: data.java_config.java_path
+                },
                 game_config: {
                     screen_size: {
                         width: data.game_config.screen_size.width || 1080,
@@ -102,8 +111,11 @@ class setting {
                 MaxRAM: data.MaxRAM || null,
                 Download_File: data.Download_File || 5,
                 Close_Launcher: arg1,
-                instance_selct: datainstance_selct,
+                instance_selct: data.instance_selct,
                 account_selected: data.account_selected || null,
+                java_config: {
+                    java_path: data.java_config.java_path
+                },
                 game_config: {
                     screen_size: {
                         width: data.game_config.screen_size.width || 1080,
@@ -123,6 +135,9 @@ class setting {
                 Close_Launcher: data.Close_Launcher,
                 instance_selct: arg1,
                 account_selected: data.account_selected || null,
+                java_config: {
+                    java_path: data.java_config.java_path
+                },
                 game_config: {
                     screen_size: {
                         width: data.game_config.screen_size.width || 1080,
@@ -142,6 +157,9 @@ class setting {
                 Close_Launcher: data.Close_Launcher,
                 instance_selct: data.instance_selct,
                 account_selected: arg1 || null,
+                java_config: {
+                    java_path: data.java_config.java_path
+                },
                 game_config: {
                     screen_size: {
                         width: data.game_config.screen_size.width || 1080,
