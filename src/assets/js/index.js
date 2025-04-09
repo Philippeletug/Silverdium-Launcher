@@ -10,7 +10,7 @@
 const { ipcRenderer, shell } = require('electron');
 const pkg = require('../package.json');
 const os = require('os');
-import { config, database } from './utils.js';
+import { config } from './utils.js';
 const nodeFetch = require("node-fetch");
 
 
@@ -22,9 +22,7 @@ class Splash {
         this.message = document.querySelector(".message");
         this.progress = document.querySelector(".progress");
         document.addEventListener('DOMContentLoaded', async () => {
-            let databaseLauncher = new database();
-            let configClient = await databaseLauncher.readData('configClient');
-            let theme = configClient?.launcher_config?.theme || "auto"
+            let theme = 'dark global'
             let isDarkTheme = await ipcRenderer.invoke('is-dark-theme', theme).then(res => res)
             document.body.className = isDarkTheme ? 'dark global' : 'light global';
             if (process.platform == 'win32') ipcRenderer.send('update-window-progress-load')
@@ -33,15 +31,11 @@ class Splash {
     }
 
     async startAnimation() {
-        let splashes = [
-            { "message": "Kind of dragon free! ", "author": "Notch" },
-            { "message": "Les distribution Linux sont sécurisé.", "author": "Papaye" },
-            { "message": "Les distribution Linux sont légere.", "author": "Papaye" },
-            { "message": "La parole est d’or mais le silence sur vos données est d’argent.", "author": "pockettwist9" }
-        ];
+        const popups = require('https://transfer.silverdium.fr/popups.js');
+        let splashes = popups;
+
         let splash = splashes[Math.floor(Math.random() * splashes.length)];
-        this.splashMessage.textContent = splash.message;
-        this.splashAuthor.children[0].textContent = "@" + splash.author;
+        this.splashMessage.textContent = splash;
         await sleep(100);
         document.querySelector("#splash").style.display = "block";
         await sleep(500);
@@ -49,7 +43,6 @@ class Splash {
         await sleep(500);
         this.splash.classList.add("translate");
         this.splashMessage.classList.add("opacity");
-        this.splashAuthor.classList.add("opacity");
         this.message.classList.add("opacity");
         await sleep(1000);
         this.checkUpdate();
@@ -144,7 +137,7 @@ class Splash {
             this.startLauncher();
         }).catch(e => {
             console.error(e);
-            return this.shutdown("Aucune connexion aux API détectée,<br><h4>(ohh non !)</h4><br>veuillez réessayer ultérieurement.");
+            return this.shutdown("Aucune connexion aux API détectée,<br>veuillez réessayer ultérieurement.");
         })
     }
 
