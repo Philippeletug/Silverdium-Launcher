@@ -321,14 +321,40 @@ class Home {
         console.log(`loading config.dataDirectory in : ${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
         let opt = {
             url: options.url,
-            authenticator: authenticator?.data,
+            authenticator: {
+                access_token: authenticator?.token,
+                client_token: authenticator?.token,
+                uuid: authenticator?.data?.dataplus?.UUID,
+                name: authenticator?.data?.name,
+                meta: {
+                    type: "cracked"
+                },
+                xboxAccount: {
+                    xuid: 1000000000000000
+                },
+                user_properties: {
+                    textures: {
+                        profileName: authenticator?.data?.name,
+                        textures: {
+                            SKIN: {
+                                url: 'https://' + authenticator?.data?.dataplus?.url?.skin?.skin + '/' + authenticator?.data?.name,
+                                metadata: {
+                                    model: "slim"
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }
+            ,
             timeout: 10000,          
             path: `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`,
             instance: options.name,
             version: options.loadder.minecraft_version,
-            detached: configClient.launcher_config.closeLauncher == "close-all" ? false : true,
-            downloadFileMultiple: configClient.launcher_config.download_multi,
-            intelEnabledMac: configClient.launcher_config.intelEnabledMac,
+            detached: configClient.Close_Launcher == "close-all" ? false : true,
+            downloadFileMultiple: configClient.Download_File,
+            intelEnabledMac: true,
 
             loader: {
                 type: options.loadder.loadder_type,
@@ -421,7 +447,7 @@ class Home {
             ipcRenderer.send('main-window-progress-reset')
             infoStartingBOX.style.display = "none"
             playInstanceBTN.style.display = "flex"
-            infoStarting.innerHTML = `Vérification`
+            infoStarting.innerHTML = `Vérification...`
             new logger(pkg.name, '#7289da');
             console.log('Close');
         });

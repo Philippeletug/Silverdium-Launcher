@@ -1,7 +1,7 @@
 {
     "name": "silverdium-launcher",
     "preductname": "Silverdium Launcher",
-    "version": "1.2.5",
+    "version": "1.3.0",
     "description": "Le meilleur launcher pour le meilleur serveur minecraft Silverdium",
     "main": "src/app.js",
     "author": {
@@ -11,7 +11,7 @@
     },
     "url": "http://api.dium.silverdium.fr:5/launcher-api",
     "api": "https://api.silverdium.fr/dium/launcher",
-    "loggername": "SuperLogger",
+    "loggername": "SilverLogger",
     "mcloggername": "Silverdium",
     "bottoken": "fonction en dev pour cause de cybersecu",
     "dlogsalonId": "#",
@@ -44,7 +44,7 @@
         "path": "^0.12.7",
         "png2icons": "^2.0.1",
         "react": "^18.3.1",
-        "silver-mc-java-core": "^3.12.3",
+        "silver-mc-java-core": "^3.12.7",
         "sweetalert2": "^11.14.5",
         "xml-js": "^1.6.11"
     },
