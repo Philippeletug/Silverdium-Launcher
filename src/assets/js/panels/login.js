@@ -8,9 +8,8 @@
  */
 
 const { AZauth, Mojang } = require('silver-mc-java-core');
-const { ipcRenderer, session } = require('electron');
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
-const path = require('path');
 
 import { popup, database, changePanel, settings, accountSelect, SilverAuth, appdata, addAccount, config, setStatus, pkg, Dbot } from '../utils.js';
  
@@ -175,7 +174,7 @@ class Login {
 
                 const appDataPath = await appdata();
                 const isMac = process.platform === 'darwin';
-                const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
+                const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`;
 
                 const verify = await SilverAuth.verify(SilverAuthConnect.token);
 
@@ -197,7 +196,12 @@ class Login {
                 if (!fs.existsSync(Json_Path)) {
                     await fs.promises.mkdir(Json_Path);
                 }
-                await fs.promises.writeFile(`${Json_Path}/client.json`, JSON.stringify(SaccountData, null, 2));
+
+                if (!fs.existsSync(`${Json_Path}/auth`)) {
+                    await fs.promises.mkdir(`${Json_Path}/auth`);
+                }
+
+                await fs.promises.writeFile(`${Json_Path}/auth/client.json`, JSON.stringify(SaccountData, null, 2));
 
                 this.saveData(SaccountData)
                 
