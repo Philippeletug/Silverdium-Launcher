@@ -10,7 +10,7 @@
 const { ipcRenderer, shell } = require('electron');
 const pkg = require('../package.json');
 const os = require('os');
-import { config, popups } from './utils.js';
+import { config, popups, settings } from './utils.js';
 const nodeFetch = require("node-fetch");
 
 
@@ -19,10 +19,8 @@ class Splash {
     constructor() {
 
         console.log('Chargement de update window');
-        
-        // document.addEventListener('DOMContentLoaded', () => {
-
-            console.log('DOM complètement chargé');
+    
+            settings.load();
 
             this.splash = document.querySelector(".splash");
             this.splashMessage = document.querySelector(".splash-message");
@@ -34,7 +32,6 @@ class Splash {
             if (process.platform == 'win32') ipcRenderer.send('update-window-progress-load')
             this.startAnimation()
 
-        // });
 
     }
 

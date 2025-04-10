@@ -10,6 +10,7 @@
 import { changePanel, viderDossier, database, Slider, config, setStatus, popup, appdata, Salert, settings } from '../utils.js'
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch')
 const os = require('os');
 
 class Settings {
@@ -242,7 +243,7 @@ class Settings {
             height.value = '720';
             await settings.save('SCREEN', 'WIDTH', width.value);
             await settings.save('SCREEN', 'HEIGHT', height.value);
-            
+
         })
     }
 
@@ -269,8 +270,16 @@ class Settings {
         })
 
         codeconfbtn.addEventListener("click", async () => {
+
+            console.log('Récupération du code de confirmation');
+
+            let conf_code = await fetch('https://silverdium.fr/api/launcher/confirm_code?key=cc85e642e9a34c082dce93fb857ee8fe36e4f9e5acd2e316168e9c652b2ec760')
+                .then(response => response.json())
+                .then(response => response.code);
+            
             console.log('Affichage du code de confirmation');
-            Salert('Silverdium Launcher', `<h3>Code de confirmation :<br>${this.config.codeconf}</h3>`, 'info', true, false);
+            
+            Salert('Silverdium Launcher', `<h3>Code de confirmation :<br>${conf_code}</h3>`, 'info', true, false);
             
         });
 
