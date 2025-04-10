@@ -10,7 +10,7 @@
 const { ipcRenderer, shell } = require('electron');
 const pkg = require('../package.json');
 const os = require('os');
-import { config } from './utils.js';
+import { config, popups } from './utils.js';
 const nodeFetch = require("node-fetch");
 
 
@@ -21,6 +21,8 @@ class Splash {
         console.log('Chargement de update window');
         
         // document.addEventListener('DOMContentLoaded', () => {
+
+            console.log('DOM complètement chargé');
 
             this.splash = document.querySelector(".splash");
             this.splashMessage = document.querySelector(".splash-message");
@@ -37,15 +39,13 @@ class Splash {
     }
 
     async startAnimation() {
-        let splashes = [
-            { "message": "Kind of dragon free! ", "author": "Notch" },
-            { "message": "Les distribution Linux sont sécurisé.", "author": "Papaye" },
-            { "message": "Les distribution Linux sont légere.", "author": "Papaye" },
-            { "message": "La parole est d’or mais le silence sur vos données est d’argent.", "author": "pockettwist9" }
-        ];
-        let splash = splashes[Math.floor(Math.random() * splashes.length)];
-        this.splashMessage.textContent = splash.message;
-        this.splashAuthor.children[0].textContent = "@" + splash.author;
+
+        let splaches = popups;
+    
+        let splash = splaches[Math.floor(Math.random() * splaches.length)];
+        this.splashMessage.innerHTML = splash;
+        this.splashAuthor.style.display = "none";
+    
         await sleep(100);
         document.querySelector("#splash").style.display = "block";
         await sleep(500);
@@ -53,11 +53,11 @@ class Splash {
         await sleep(500);
         this.splash.classList.add("translate");
         this.splashMessage.classList.add("opacity");
-        this.splashAuthor.classList.add("opacity");
         this.message.classList.add("opacity");
         await sleep(1000);
         this.checkUpdate();
     }
+    
 
     async checkUpdate() {
         this.setStatus(`Recherche de mise à jour...`);

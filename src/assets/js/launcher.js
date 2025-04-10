@@ -23,7 +23,6 @@ let noroll = false;
 class Launcher {
     async init() {
         this.initLog();
-        settings.init();
         console.log('--------------------LAUNCHER STARTING--------------------');
         console.log('Initializing Launcher...');
         this.shortcut()

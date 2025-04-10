@@ -19,6 +19,10 @@ class setting {
         const isMac = process.platform === 'darwin';
         const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
         
+        if (!fs.existsSync(`${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`)) {
+            await fs.promises.mkdir(`${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
+        }
+
         if (!fs.existsSync(Json_Path)) {
             await fs.promises.mkdir(Json_Path);
         }
@@ -145,6 +149,54 @@ class setting {
                     }
                 }
             };
+
+        }
+
+        else if (type == 'SCREEN') {
+            
+            if (arg1 == 'WIDTH') {
+
+                data = {
+                    MinRAM: data.MinRAM,
+                    MaxRAM: data.MaxRAM,
+                    Download_File: data.Download_File || 5,
+                    Close_Launcher: data.Close_Launcher || "close-launcher",
+                    instance_selct: data.instance_selct,
+                    account_selected: data.account_selected || null,
+                    java_config: {
+                        java_path: data.java_config.java_path
+                    },
+                    game_config: {
+                        screen_size: {
+                            width: arg2,
+                            height: data.game_config.screen_size.height || 720
+                        }
+                    }
+                } 
+
+            }
+
+            else if (arg1 == 'HEIGHT') {
+
+                data = {
+                    MinRAM: data.MinRAM,
+                    MaxRAM: data.MaxRAM,
+                    Download_File: data.Download_File || 5,
+                    Close_Launcher: data.Close_Launcher || "close-launcher",
+                    instance_selct: data.instance_selct,
+                    account_selected: data.account_selected || null,
+                    java_config: {
+                        java_path: data.java_config.java_path
+                    },
+                    game_config: {
+                        screen_size: {
+                            width: data.game_config.screen_size.width || 1080,
+                            height: arg2
+                        }
+                    }
+                } 
+
+            }
 
         }
 

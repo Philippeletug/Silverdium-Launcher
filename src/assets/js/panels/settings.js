@@ -218,7 +218,7 @@ class Settings {
 
     async resolution() {
         console.log('loading resolution async function...');
-        let configClient = await this.db.readData('configClient')
+        let configClient = await settings.load();
         let resolution = configClient?.game_config?.screen_size || { width: 1080, height: 720 };
 
         let width = document.querySelector(".width-size");
@@ -229,23 +229,20 @@ class Settings {
         height.value = resolution.height;
 
         width.addEventListener("change", async () => {
-            let configClient = await this.db.readData('configClient')
-            configClient.game_config.screen_size.width = width.value;
-            await this.db.updateData('configClient', configClient);
+            await settings.save('SCREEN', 'WIDTH', width.value);
         })
 
         height.addEventListener("change", async () => {
-            let configClient = await this.db.readData('configClient')
-            configClient.game_config.screen_size.height = height.value;
-            await this.db.updateData('configClient', configClient);
+            await settings.save('SCREEN', 'HEIGHT', height.value);
         })
 
         resolutionReset.addEventListener("click", async () => {
-            let configClient = await this.db.readData('configClient')
-            configClient.game_config.screen_size = { width: '1080', height: '720' };
+
             width.value = '1080';
             height.value = '720';
-            await this.db.updateData('configClient', configClient);
+            await settings.save('SCREEN', 'WIDTH', width.value);
+            await settings.save('SCREEN', 'HEIGHT', height.value);
+            
         })
     }
 
