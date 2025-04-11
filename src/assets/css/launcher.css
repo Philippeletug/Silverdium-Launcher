@@ -71,6 +71,16 @@ input::-webkit-inner-spin-button {
     display: block;
 }
 
+.launcher-version {
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    color: #bdbdbd;
+}
+
 .button-frame {
     position: relative;
     display: table-cell;

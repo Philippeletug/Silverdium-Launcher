@@ -295,6 +295,8 @@ class Launcher {
         document.querySelector('.frame').classList.toggle('hide')
         document.querySelector('.dragbar').classList.toggle('hide')
 
+        document.querySelector('.launcher-version').innerHTML = 'V' + pkg.version;
+
         document.querySelector('#minimize').addEventListener('click', () => {
             ipcRenderer.send('main-window-minimize');
         });

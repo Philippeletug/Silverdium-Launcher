@@ -141,7 +141,6 @@ class Login {
 
 
         AZauthConnectBTN.addEventListener('click', async () => {
-            document.getElementById('redirect').style.display = 'none';
             PopupLogin.openPopup({
                 title: 'Connexion en cours...', 
                 content: 'Veuillez patienter...',
