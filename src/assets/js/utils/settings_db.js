@@ -17,19 +17,19 @@ class setting {
 
         const appDataPath = await this.appdata();
         const isMac = process.platform === 'darwin';
-        const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/auth`;
+        const Json_Path = `${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`;
         
-        if (!fs.existsSync(`${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`)) {
-            await fs.promises.mkdir(`${appDataPath}/${isMac ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
-        }
-
         if (!fs.existsSync(Json_Path)) {
             await fs.promises.mkdir(Json_Path);
         }
 
+        if (!fs.existsSync(Json_Path + '/auth')) {
+            await fs.promises.mkdir(Json_Path + '/auth');
+        }
 
-        if (!fs.existsSync(Json_Path + '/setting.json')) {
-            await fs.promises.writeFile(`${Json_Path}/setting.json`, JSON.stringify({
+
+        if (!fs.existsSync(Json_Path + '/auth/setting.json')) {
+            await fs.promises.writeFile(`${Json_Path}/auth/setting.json`, JSON.stringify({
                 MinRAM: 2,
                 MaxRAM: 6,
                 Download_File: 5,
@@ -58,6 +58,10 @@ class setting {
         
         if (!fs.existsSync(Json_Path)) {
             await fs.promises.mkdir(Json_Path);
+        }
+
+        if (!fs.existsSync(Json_Path + '/settings.json')) {
+            return console.error('Erreur lors de la sauvegarde des paramètres, fichier settings.json introuvable.')
         }
 
         let data = await fs.promises.readFile(`${Json_Path}/setting.json`, 'utf8');

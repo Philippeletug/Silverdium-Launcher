@@ -19,8 +19,6 @@ class Splash {
     constructor() {
 
         console.log('Chargement de update window');
-    
-            settings.load();
 
             this.splash = document.querySelector(".splash");
             this.splashMessage = document.querySelector(".splash-message");
@@ -52,6 +50,9 @@ class Splash {
         this.splashMessage.classList.add("opacity");
         this.message.classList.add("opacity");
         await sleep(1000);
+
+        await settings.load();
+
         this.checkUpdate();
     }
     
