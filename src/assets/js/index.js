@@ -51,7 +51,7 @@ class Splash {
         this.message.classList.add("opacity");
         await sleep(1000);
 
-        await settings.load();
+        await settings.init();
 
         this.checkUpdate();
     }

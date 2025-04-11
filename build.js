@@ -4,7 +4,8 @@ const builder = require('electron-builder')
 const JavaScriptObfuscator = require('javascript-obfuscator');
 const nodeFetch = require('node-fetch')
 const png2icons = require('png2icons');
-const Jimp = require('jimp');
+const sharp = require('sharp'); 
+
 
 const { preductname, copyright } = require('./package.json');
 
@@ -131,19 +132,34 @@ class Index {
     }
 
     async iconSet(url) {
-        let Buffer = await nodeFetch(url)
-        if (Buffer.status == 200) {
-            Buffer = await Buffer.buffer()
-            const image = await Jimp.read(Buffer);
-            Buffer = await image.resize(256, 256).getBufferAsync(Jimp.MIME_PNG)
-            fs.writeFileSync("src/assets/images/icon.icns", png2icons.createICNS(Buffer, png2icons.BILINEAR, 0));
-            fs.writeFileSync("src/assets/images/icon.ico", png2icons.createICO(Buffer, png2icons.HERMITE, 0, false));
-            fs.writeFileSync("src/assets/images/icon.png", Buffer);
-            console.log('new icon set')
-        } else {
-            console.log('connection error')
+        try {
+            // Fetch l'icône depuis l'URL
+            let response = await nodeFetch(url);
+    
+            // Vérifie si la réponse est correcte
+            if (response.status === 200) {
+                let buffer = await response.buffer();
+    
+                // Utilisation de sharp pour redimensionner l'image en 256x256
+                const resizedBuffer = await sharp(buffer)
+                    .resize(256, 256)
+                    .toBuffer();  // Convertir l'image redimensionnée en buffer
+    
+                // Créer les icônes dans différents formats
+                fs.writeFileSync("src/assets/images/icon.icns", png2icons.createICNS(resizedBuffer, png2icons.BILINEAR, 0));
+                fs.writeFileSync("src/assets/images/icon.ico", png2icons.createICO(resizedBuffer, png2icons.HERMITE, 0, false));
+                fs.writeFileSync("src/assets/images/icon.png", resizedBuffer);
+    
+                console.log('Nouvelle icône définie avec succès!');
+            } else {
+                console.error('Erreur de connexion à l\'URL de l\'icône');
+            }
+        } catch (err) {
+            console.error('Une erreur est survenue lors de la récupération ou du traitement de l\'icône : ', err.message || err);
         }
     }
+    
+
 }
 
 new Index().init();
