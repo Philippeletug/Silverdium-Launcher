@@ -11,6 +11,7 @@ import { changePanel, viderDossier, database, Slider, config, setStatus, popup, 
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch')
+const Swal = require('sweetalert2')
 const os = require('os');
 
 class Settings {
@@ -271,15 +272,52 @@ class Settings {
 
         codeconfbtn.addEventListener("click", async () => {
 
-            console.log('Récupération du code de confirmation');
+            Swal.fire({
+                title: "Silverdium Launcher",
+                input: "text",
+                inputLabel: "Entrez le code PIN",
+                inputAttributes: {
+                    autocapitalize: "off",
+                    maxlength: 4
+                  },
+                showCancelButton: true,
+                confirmButtonText: "Vérifier",
+                showLoaderOnConfirm: true,
+                preConfirm: async (pin) => {
+                  try {
 
-            let conf_code = await fetch('https://silverdium.fr/api/launcher/confirm_code?key=cc85e642e9a34c082dce93fb857ee8fe36e4f9e5acd2e316168e9c652b2ec760')
-                .then(response => response.json())
-                .then(response => response.code);
-            
-            console.log('Affichage du code de confirmation');
-            
-            Salert('Silverdium Launcher', `<h3>Code de confirmation :<br>${conf_code}</h3>`, 'info', true, false);
+                    const url = `https://silverdium.fr/api/launcher/get/confirm_code?pin=${pin}&key=cc85e642e9a34c082dce93fb857ee8fe36e4f9e5acd2e316168e9c652b2ec760`;
+                    
+                    console.log('Req fetch : ' + url);
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                      const errorData = await response.json();
+                      return Swal.showValidationMessage(
+                        `Erreur : ${errorData.message || JSON.stringify(errorData)}`
+                      );
+                    }
+              
+                    const data = await response.json();
+                    return data;
+              
+                  } catch (error) {
+                    Swal.showValidationMessage(
+                      `Erreur réseau : ${error}`
+                    );
+                  }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  const data = result.value;
+                  Swal.fire({
+                    title: `Code PIN validé`,
+                    html: `|| ${JSON.stringify(data.code, null, 2)} ||`,
+                    icon: "success"
+                  });
+                }
+              });
             
         });
 
