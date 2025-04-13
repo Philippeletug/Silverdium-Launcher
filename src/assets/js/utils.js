@@ -21,6 +21,7 @@ import setting from './utils/settings_db.js';
 const Setting = new setting(appdata, await config.GetConfig().then(res => res).catch(err => err));
 import Salert from './utils/alert.js';
 import SilverAuth from './utils/silverauth.js';
+import cmd from './utils/cmd.js';
 import Dbot  from './dbot.js';
 import popup from './utils/popup.js';
 import { viderDossier } from './utils/viderdossier.js';
@@ -196,6 +197,7 @@ export {
     popup as popup,
     Setting as settings,
     Dbot as Dbot,
+    cmd as cmd,
     popups as popups,
     SilverAuth as SilverAuth,
     createFile as createFile,

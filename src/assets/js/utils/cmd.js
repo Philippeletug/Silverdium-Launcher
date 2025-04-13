@@ -1,84 +1,107 @@
-// Fonction pour afficher la popup
-function afficherPopup() {
-    // Création de l'élément div pour la popup
-    const popup = document.createElement('div');
-    popup.id = 'popup';
-    popup.style.position = 'fixed';
-    popup.style.left = '50%';
-    popup.style.top = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.backgroundColor = 'white';
-    popup.style.padding = '20px';
-    popup.style.border = '1px solid #ccc';
-    popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    popup.style.zIndex = '9999';
-    popup.style.width = '300px';
-    popup.style.display = 'none';  // Masqué par défaut
+/**
+ * @author Silverdium
+ * @author SilverCore
+ * @author Mister Papaye
+ */
 
-    // Création de l'élément pour fermer la popup (X)
-    const closeBtn = document.createElement('span');
-    closeBtn.innerHTML = '&times;';
-    closeBtn.style.position = 'absolute';
-    closeBtn.style.top = '10px';
-    closeBtn.style.right = '10px';
-    closeBtn.style.fontSize = '20px';
-    closeBtn.style.cursor = 'pointer';
-    closeBtn.onclick = function() {
-        fermerPopup(popup);
-    };
-    popup.appendChild(closeBtn);
 
-    // Titre de la popup
-    const titre = document.createElement('h3');
-    titre.textContent = 'Entrez votre commande';
-    popup.appendChild(titre);
+class cmd {
 
-    // Zone de texte pour entrer la commande
-    const inputCommande = document.createElement('input');
-    inputCommande.type = 'text';
-    inputCommande.id = 'commande';
-    inputCommande.placeholder = 'Commande...';
-    inputCommande.style.width = '100%';
-    inputCommande.style.padding = '10px';
-    inputCommande.style.margin = '10px 0';
-    inputCommande.style.border = '1px solid #ccc';
-    popup.appendChild(inputCommande);
+    constructor(version, os_info) {
 
-    // Bouton Entrer pour soumettre la commande
-    const btnEntrer = document.createElement('button');
-    btnEntrer.textContent = 'Entrer';
-    btnEntrer.style.width = '100%';
-    btnEntrer.style.padding = '10px';
-    btnEntrer.style.backgroundColor = '#4CAF50';
-    btnEntrer.style.color = 'white';
-    btnEntrer.style.border = 'none';
-    btnEntrer.style.cursor = 'pointer';
-    btnEntrer.onclick = function() {
-        soumettreCommande(inputCommande.value, popup);
-    };
-    popup.appendChild(btnEntrer);
+        this.commande = document.querySelector('.cmd-input');
+        this.submit = document.querySelector('.cmd-submit-btn');
+        this.launcher_info = document.querySelector('.cmd-launcher-info');
+        this.container = document.querySelector('.cmd-container');
 
-    // Ajout de la popup au body du document
-    document.body.appendChild(popup);
+        this.version = version;
+        this.os = os_info;
 
-    // Affichage de la popup
-    popup.style.display = 'block';
-}
+        this.init();
 
-// Fonction pour fermer la popup
-function fermerPopup(popup) {
-    popup.style.display = 'none';
-    document.body.removeChild(popup);
-}
-
-// Fonction pour soumettre la commande
-function soumettreCommande(commande, popup) {
-    if (commande) {
-        alert("Commande soumise : " + commande);
-    } else {
-        alert("Veuillez entrer une commande.");
     }
-    fermerPopup(popup); // Ferme la popup après soumission
+
+    init() {
+
+        this.launcher_info.innerHTML = `V${this.version} - ${this.os.osInfo.platform} ${this.os.cpuInfo.architecture}`;
+
+        let commande = this.commande;
+
+        this.submit.addEventListener('click', async () => {
+
+            event.preventDefault();
+
+            this.read_commande(commande.value);
+
+        })
+
+    }
+
+    async read_commande(commande) {
+
+        let cmd = true;
+
+        let result;
+
+        if (cmd) {
+
+            if (commande.startsWith('echo')) {
+
+                let arg = commande.split(' '[1]);
+                let value = commande.split(' '[2]);
+                console.log(arg)
+                result = { type: "console_" + arg, value: value };
+            }            
+
+            else {
+                return this.exec_commande()
+            }
+
+        } else {
+            return this.exec_commande()
+        }
+
+    
+        let typeParts = result.type.split('_');
+
+        this.exec_commande(true, typeParts[0], typeParts[1], result.value);
+
+    }
+
+    async exec_commande( 
+                valid = false, 
+                type = "perso", 
+                parm = null, 
+                arg1 = null,
+                arg2 = null, 
+                exec = {} 
+            ) {
+
+        if (valid) {
+
+            if (type == "perso") {
+
+            }
+
+            else if (type == "console") {
+
+                if (parm == 'log') {
+                    console.log(arg1)
+                }
+                else if (parm == 'warn') {
+                    console.log(arg1)
+                }
+                else if (parm == 'error') {
+                    console.log(arg1)
+                }
+
+            }
+
+        }   
+
+    }
+
 }
 
-export default {afficherPopup, fermerPopup, soumettreCommande};
+
+export default cmd;

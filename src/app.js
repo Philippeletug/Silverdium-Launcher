@@ -13,6 +13,8 @@ const { autoUpdater } = require('electron-updater')
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+
 
 const UpdateWindow = require("./assets/js/windows/updateWindow.js");
 const MainWindow = require("./assets/js/windows/mainWindow.js");
@@ -53,19 +55,37 @@ ipcMain.on('update-window-progress-load', () => UpdateWindow.getWindow().setProg
 ipcMain.handle('path-user-data', () => app.getPath('userData'))
 ipcMain.handle('appData', e => app.getPath('appData'))
 
-ipcMain.handle('set-cookie', async (event, cookieData) => {
-    try {
-        await session.defaultSession.cookies.set({
-            url: 'http://localhost', // ou l’URL de ton app, mais elle doit être valide
-            name: cookieData.name,
-            value: cookieData.value,
-            expirationDate: Math.floor(Date.now() / 7 * 24 * 1000) + 3600 
-        });
-        return { success: true };
-    } catch (err) {
-        console.error('Erreur set-cookie :', err);
-        return { success: false, message: err.message };
-    }
+ipcMain.handle('get-pc-info', () => {
+
+    return {
+        user: os.userInfo().username,
+    
+        osInfo: {
+            osType: os.type(),
+            platform: os.platform(),
+            release: os.release(),
+            hostname: os.hostname()
+        },
+    
+        cpuInfo: {
+            architecture: os.arch(),
+            model: os.cpus()[0].model,
+            cores: os.cpus().length
+        },
+    
+        memoryInfo: {
+            totalMemoryGB: (os.totalmem() / 1024 ** 3).toFixed(2) + ' GB',
+            freeMemoryGB: (os.freemem() / 1024 ** 3).toFixed(2) + ' GB',
+            totalMemoryMB: (os.totalmem() / 1024 / 1024).toFixed(2),
+            freeMemoryMB: (os.freemem() / 1024 / 1024).toFixed(2)
+        },
+    
+        uptimeInfo: {
+            uptimeSeconds: os.uptime(),
+            uptimeHours: (os.uptime() / 3600).toFixed(2)
+        }
+    };
+    
 });
 
 ipcMain.handle('get-cookie', async (event, name) => {
