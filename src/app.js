@@ -88,13 +88,12 @@ ipcMain.handle('get-pc-info', () => {
     
 });
 
-ipcMain.handle('get-cookie', async (event, name) => {
+ipcMain.handle('download-file', async (event, { url, path }) => {
     try {
-        const cookies = await session.defaultSession.cookies.get({ name });
-        return cookies.length ? cookies[0].value : null;
+        await downloadFile(url, path);
+        return { success: true };
     } catch (err) {
-        console.error('Erreur get-cookie :', err);
-        return null;
+        return { success: false, error: err.message };
     }
 });
 

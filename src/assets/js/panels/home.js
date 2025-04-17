@@ -12,6 +12,8 @@ import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, 
 const { Launch } = require('silver-mc-java-core');
 const { shell, ipcRenderer } = require('electron');
 const fs = require('fs');
+const path = require('path');
+const https = require('https');
 
 class Home {
     static id = "home";
@@ -301,13 +303,13 @@ class Home {
 
     async startGame() {
 
-        console.log('loading startGame async function...');
+        let authenticator = await settings.load('ACCOUNT');
+
         console.log('Launching game...');
 
         let launch = new Launch()
         let configClient = await settings.load();
         let instance = await config.getInstanceList();
-        let authenticator = await settings.load('ACCOUNT');
         let options = instance.find(i => i.name == configClient.instance_selct);
 
         let playInstanceBTN = document.querySelector('.play-instance')
@@ -318,7 +320,7 @@ class Home {
         const MaxRam = configClient.MaxRAM * 1024;
         const AroundMaxRam = Math.floor(MaxRam);
 
-        console.log(`loading config.dataDirectory in : ${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`);
+
         let opt = {
             url: options.url,
             authenticator: {
@@ -471,6 +473,20 @@ class Home {
             infoStarting.innerHTML = `Vérification`
             new logger(pkg.name, '#7289da');
             console.log(err);
+        });
+    }
+
+    downloadImage(url, outputPath) {
+        https.get(url, (res) => {
+            res.pipe(fs.createWriteStream(outputPath))
+                .on('finish', () => {
+                    console.log(`✅ Image téléchargée : ${outputPath}`);
+                })
+                .on('error', (err) => {
+                    console.error('❌ Erreur lors de l\'écriture du fichier :', err);
+                });
+        }).on('error', (err) => {
+            console.error('❌ Erreur HTTP :', err);
         });
     }
 

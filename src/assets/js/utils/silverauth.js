@@ -8,7 +8,7 @@ class SilverAuth {
 
     async login(mail, passwd) {
         try {
-            const response = await fetch('https://auth.silverdium.fr/auth/login', {
+            const response = await fetch('https://auth.silvercore.fr/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -35,10 +35,10 @@ class SilverAuth {
 
     async verify(token) {
         try {
-            const response = await fetch('https://auth.silverdium.fr/auth/verify', {
+            const response = await fetch('https://auth.silvercore.fr/auth/verify', {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Cookie': `silvertoken=${token}`
+                    'silvertoken': token
                 },
             });
 
@@ -55,7 +55,7 @@ class SilverAuth {
     }
 
     async register() {
-        window.open('https://auth.silverdium.fr/auth/view/register?redirect=close', '_blank');
+        window.open('https://auth.silvercore.fr/auth/view/register?redirect=close', '_blank');
     };
 
 }
