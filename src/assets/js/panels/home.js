@@ -365,7 +365,7 @@ class Home {
             },
 
             java: {
-                version: 17,
+                // version: null,
                 type: 'jre',
             },
 
@@ -398,8 +398,7 @@ class Home {
             ipcRenderer.send('main-window-progress-load')
         });
 
-        launch.on('progress', (progress, size) => {
-            console.log('Téléchargement des données...')
+        launch.on('progress', (progress, size) => {                                                       
             infoStarting.innerHTML = `Téléchargement ${((progress / size) * 100).toFixed(0)}%`
             ipcRenderer.send('main-window-progress', { progress, size })
             progressBar.value = progress;
