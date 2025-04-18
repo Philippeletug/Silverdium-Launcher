@@ -17,7 +17,6 @@ const os = require('os');
 class Settings {
     static id = "settings";
     async init(config) {
-        console.log('--------------------SETTINGS PANEL--------------------');
         console.log('loading settings panel...');
         this.config = config;
         this.db = new database();
@@ -31,7 +30,6 @@ class Settings {
 
 
     navBTN() {
-        console.log('loading navBTN function...');
         document.querySelector('.nav-box').addEventListener('click', e => {
 
             if (e.target.classList.contains('nav-settings-btn')) {
@@ -59,8 +57,6 @@ class Settings {
     }
 
     accounts() {
-
-        console.log('loading accounts function...');
         
         document.querySelector('.accounts-list').addEventListener('click', async e => {
             let popupAccount = new popup()
@@ -115,7 +111,6 @@ class Settings {
 
     async setInstance(auth) {
 
-        console.log('loading setInstance async function...');
         let configClient = await settings.load();
         let instanceSelect = configClient.instance_selct
         let instancesList = await config.getInstanceList()
@@ -137,7 +132,6 @@ class Settings {
     }
 
     async ram() {
-        console.log('loading ram async function...');
         let setting = await settings.load();
         let config = await this.db.readData('configClient');
         let totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
@@ -176,7 +170,6 @@ class Settings {
     }    
 
     async javaPath() { // désactivé
-        console.log('loading javaPath async function...');
         try {
             let javaPathText = document.querySelector(".java-path-txt")
             javaPathText.textContent = `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/runtime`;
@@ -219,7 +212,6 @@ class Settings {
     
 
     async resolution() {
-        console.log('loading resolution async function...');
         let configClient = await settings.load();
         let resolution = configClient?.game_config?.screen_size || { width: 1080, height: 720 };
 
@@ -249,7 +241,6 @@ class Settings {
     }
 
     async launcher() {
-        console.log('loading launcher async function...');
         let setting = await settings.load();
 
         let maxDownloadFiles = setting?.Download_File || 5;

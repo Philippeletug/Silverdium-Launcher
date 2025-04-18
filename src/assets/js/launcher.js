@@ -39,7 +39,6 @@ class Launcher {
         this.createPanels(Login, Home, Settings);
         console.log('Starting launcher...');
         this.startLauncher();
-        this.maintenance();
         this.donsvp();
         this.initCmd()
         initializeDiscordRPC();
@@ -135,17 +134,6 @@ class Launcher {
         });
     }
 
-    maintenance() {
-        if (this.config.servmaintenance === true) {
-            console.warn('Le serveur est actuellement en maintenance.');
-            Salert('Silverdium Launcher', `${this.config.servmaintenance_message}`, 'info', true, false);
-        } else if (this.config.servmaintenance === false) {
-            console.log('maintenance false');
-        } else {
-            console.error('Error: config.servmaintenance is not defined.');
-        }
-    }
-
     donsvp() {
         if (Math.random() < 0.2) {
             console.log('executing donsvp alert...');
@@ -192,42 +180,7 @@ class Launcher {
             ipcRenderer.send('main-window-close');
         })
     }
-
-    // async initConfigClient() {
-    //  
-    //     console.log('Initializing Config Client...')
-        // let configClient = await this.db.readData('configClient')
-        // const totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
-        // const maxmem = totalMem / 2;
-
-
-        // if (!configClient) {
-        //     await this.db.createData('configClient', {
-        //         account_selected: null,
-        //         instance_selct: null,
-        //         java_config: {
-        //             java_path: null,
-        //             java_memory: {
-        //                 min: 2,
-        //                 max: maxmem
-        //             }
-        //         },
-        //         game_config: {
-        //             screen_size: {
-        //                 width: 1080,
-        //                 height: 720
-        //             }
-        //         },
-        //         launcher_config: {
-        //             download_multi: 5,
-        //             theme: 'dark',
-        //             closeLauncher: 'close-launcher',
-        //             intelEnabledMac: true
-        //         }
-        //     })
-        // }
-    // }
-
+    
     createPanels(...panels) {
         let panelsElem = document.querySelector('.panels')
         for (let panel of panels) {

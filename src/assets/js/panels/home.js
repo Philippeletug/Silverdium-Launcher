@@ -12,13 +12,11 @@ import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, 
 const { Launch } = require('silver-mc-java-core');
 const { shell, ipcRenderer } = require('electron');
 const fs = require('fs');
-const path = require('path');
 const https = require('https');
 
 class Home {
     static id = "home";
     async init(config) {
-        console.log('--------------------HOME PANEL--------------------');
         console.log('loading home panel...');
         this.config = config;
         this.db = new database();
@@ -32,8 +30,6 @@ class Home {
     }
     
     async news() {
-        console.log('loading news async function...');
-        console.log('loading the news...');
         let newsElement = document.querySelector('.news-list');
         let news = await config.getNews().then(res => res).catch(err => false);
         if (news) {
@@ -106,7 +102,6 @@ class Home {
     }
 
     socialLick() {
-        console.log('loading socialLinck function...');
         const socials = document.querySelectorAll('.social-block');
 
         socials.forEach(social => {
@@ -202,7 +197,6 @@ class Home {
     };
 
     async instancesSelect() {
-        console.log('loading instancesSelect async function...');
         let configClient = await settings.load();
         let auth = await settings.load('ACCOUNT');
         let instancesList = await config.getInstanceList();

@@ -16,7 +16,7 @@ import { popup, database, changePanel, settings, accountSelect, SilverAuth, appd
 class Login {
     static id = "login"; 
     async init(config) {
-        console.log('--------------------LOGIN PANEL--------------------');
+        console.log('loading login panel...');
         this.config = config;
         this.db = new database();
 
@@ -32,12 +32,9 @@ class Login {
             document.querySelector('.cancel-home').style.display = 'none'
             changePanel('settings')
         })
-        console.log('Loading Dbot class drom ../dbot.js');
-        const dbot = new Dbot;
     }
 
     async getMicrosoft() {
-        console.log('Initializing Microsoft login...');
         let popupLogin = new popup();
         let loginHome = document.querySelector('.login-home');
         let microsoftBtn = document.querySelector('.connect-home');
@@ -70,7 +67,6 @@ class Login {
     }
 
     async getCrack() {
-        console.log('Initializing offline login...');
         let typeconte = 'Offline';
         let popupLogin = new popup();
         let loginOffline = document.querySelector('.login-offline');
@@ -116,9 +112,6 @@ class Login {
 
 
     async getAZauth() { // silverauth
-        console.log('Initializing SilverAuth login...');
-        let typeconte = 'AZauth';
-        let AZauthClient = new AZauth(this.config.online);
         let PopupLogin = new popup();
         let loginAZauth = document.querySelector('.login-AZauth');
         let loginAZauthA2F = document.querySelector('.login-AZauth-A2F');
