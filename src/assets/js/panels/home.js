@@ -435,7 +435,7 @@ class Home {
             if (configClient.Close_Launcher == 'close-launcher') {
                 ipcRenderer.send("main-window-hide")
             };
-            new logger(`${pkg.mcloggername}`, '#36b030'); 
+            new logger(`${pkg.mcloggername}`, '#36b030');  
             ipcRenderer.send('main-window-progress-load')
             infoStarting.innerHTML = `Demarrage en cours...`
             console.log(e);
