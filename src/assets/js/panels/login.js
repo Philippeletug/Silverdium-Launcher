@@ -196,7 +196,7 @@ class Login {
                 await fs.promises.writeFile(`${Json_Path}/auth/client.json`, JSON.stringify(SaccountData, null, 2));
 
                 this.saveData(SaccountData)
-                
+
                 document.querySelector('.play-btn').style.display = 'block';
                 document.querySelector('.play-instance').style.display = 'block';
                 document.querySelector('.play-elements').style.display = 'block';

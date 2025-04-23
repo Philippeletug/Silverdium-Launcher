@@ -70,7 +70,8 @@ async function appdata() {
 
 
 async function addAccount(data) {
-    const skinUrl = data.data?.dataplus?.url?.skin?.head + '/' + data.data.name;
+    const skinUrl = data.data?.dataplus?.url?.skin?.head + '/' + data.data?.name;
+
     let div = document.createElement("div");
     div.classList.add("account");
     div.id = data.data.userId;
@@ -91,13 +92,15 @@ async function addAccount(data) {
 
 
 async function accountSelect(data) {
-    let account = document.getElementById(`${data.data.userId}`);
+    let Data = await Setting.load('ACCOUNT');
+
+    let account = document.getElementById(`${Data.data.userId}`);
     let activeAccount = document.querySelector('.account-select');
 
     if (activeAccount) activeAccount.classList.remove('account-select');
     account.classList.add('account-select');
 
-    const headUrl = data.data?.dataplus?.url?.skin?.head + '/' + data.data.name;
+    const headUrl = `${Data.data?.dataplus?.url?.skin?.head}/${Data.data.name}`;
     headplayer(headUrl);
 }
 

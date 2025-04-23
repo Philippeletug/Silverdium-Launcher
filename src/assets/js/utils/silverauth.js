@@ -1,8 +1,4 @@
-const fs = require('fs/promises');
-const path = require('path');
 const fetch = require('node-fetch');
-
-import { appdata, config } from '../utils.js';
 
 class SilverAuth {
 

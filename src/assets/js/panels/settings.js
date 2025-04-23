@@ -7,7 +7,7 @@
  * @author Mister Papaye
  */
 
-import { changePanel, viderDossier, database, Slider, config, setStatus, popup, appdata, Salert, settings } from '../utils.js'
+import { changePanel, viderDossier, database, Slider, config, setStatus, accountSelect, popup, appdata, Salert, settings } from '../utils.js'
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch')
@@ -74,11 +74,11 @@ class Settings {
                         return changePanel('login')
                     }
 
-                    let account = await this.db.readData('accounts', id);
-                    let configClient = await this.setInstance(account);
+                    // let account = await this.db.readData('accounts', id);
+                    // let configClient = await this.setInstance(account);
                     await accountSelect(account);
-                    configClient.account_selected = account.ID;
-                    return await this.db.updateData('configClient', configClient);
+                    // configClient.account_selected = account.ID;
+                    // return await this.db.updateData('configClient', configClient);
                 }
 
                 if (e.target.classList.contains("delete-profile")) {

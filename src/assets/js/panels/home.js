@@ -19,7 +19,6 @@ class Home {
     async init(config) {
         console.log('loading home panel...');
         this.config = config;
-        this.db = new database();
         this.news()
         this.socialLick()
         this.player_opt();
@@ -114,6 +113,18 @@ class Home {
 
     async player_opt() {
 
+        const user = await settings.load('ACCOUNT'); 
+
+        const headUrl = user?.data?.dataplus?.url?.skin?.head;
+        const username = user?.data?.name;
+
+        const finalUrl = `https://${headUrl}/${username}`;
+        
+        const playerHead = document.getElementById("player-head");
+        
+        playerHead.style.backgroundImage = `url("${finalUrl}")`;
+        playerHead.style.backgroundSize = "cover";
+        
         const player_head = document.querySelector('.player-options');
 
         player_head.addEventListener('click', async () => {
@@ -155,7 +166,6 @@ class Home {
                 options: true
             })
 
-            let user = await settings.load('ACCOUNT');
             const pseudo_input = document.getElementById('pseudo');
             const email_input = document.getElementById('email');
             const uuid_input = document.getElementById('uuid');
@@ -340,8 +350,7 @@ class Home {
                             }
                         }
                     }
-                }
-                
+                }                
             }
             ,
             timeout: 10000,          

@@ -248,7 +248,6 @@
     transition: var(--transition);
     height: 3rem;
     width: 3rem;
-    pointer-events: none;
     border-radius: 15px;
 }
 
