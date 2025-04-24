@@ -7,7 +7,7 @@
 const RPC = require("discord-rpc");
 const clientId = '1343884731724599347';
 
-// Fonction pour initialiser et gérer Discord Rich Presence
+// Fonction pour initialiser et gérer Discord rpc
 export default function initializeDiscordRPC() {
     const rpc = new RPC.Client({ transport: "ipc" });
 
@@ -32,7 +32,6 @@ export default function initializeDiscordRPC() {
 
     rpc.on("ready", () => {
         setActivity();
-        setInterval(setActivity, 15 * 1000);
     });
 
     rpc.login({ clientId }).catch(console.error);

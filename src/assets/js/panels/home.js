@@ -7,7 +7,7 @@
  * @author Mister Papaye
  */
 
-import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, settings } from '../utils.js';
+import { config, logger, set_console_alert, changePanel, appdata, setStatus, pkg, popup, settings } from '../utils.js';
 
 const { Launch } = require('silver-mc-java-core');
 const { shell, ipcRenderer } = require('electron');
@@ -26,6 +26,8 @@ class Home {
         document.querySelector('.settings-btn').addEventListener('click', e => {
             changePanel('settings')
         })
+
+        set_console_alert();
     }
     
     async news() {
@@ -307,6 +309,8 @@ class Home {
 
     async startGame() {
 
+        set_console_alert();
+
         let authenticator = await settings.load('ACCOUNT');
 
         console.log('Launching game...');
@@ -324,7 +328,19 @@ class Home {
         const MaxRam = configClient.MaxRAM * 1024;
         const AroundMaxRam = Math.floor(MaxRam);
 
-
+        const pngUrl =
+        'https://' +
+        authenticator?.data?.dataplus?.url?.skin?.skin +
+        '/' +
+        authenticator?.data?.name;
+    
+        const response = await fetch(pngUrl);
+        if (!response.ok) throw new Error(`Échec HTTP : ${response.status}`);
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        const dataUrl = `data:image/png;base64,${base64}`;
+        
         let opt = {
             url: options.url,
             authenticator: {
@@ -337,6 +353,12 @@ class Home {
                 },
                 xboxAccount: {
                     xuid: 1000000000000000
+                },
+                profile: {
+                    skins: {
+                        url: 'https://' + authenticator?.data?.dataplus?.url?.skin?.skin + '/' + authenticator?.data?.name,
+                        skin: dataUrl
+                    },
                 },
                 user_properties: {
                     textures: {
@@ -493,7 +515,6 @@ class Home {
     }
 
     getdate(e) {
-        console.log('loading getdate function...');
         let date = new Date(e)
         let year = date.getFullYear()
         let month = date.getMonth() + 1

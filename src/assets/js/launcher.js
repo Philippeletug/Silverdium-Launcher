@@ -13,7 +13,7 @@ import Home from './panels/home.js';
 import Settings from './panels/settings.js';
 
 // import modules
-import { logger, config, changePanel, database, popup, cmd, setBackground, SilverAuth, initializeDiscordRPC, accountSelect, addAccount, pkg, appdata, Salert, settings } from './utils.js';
+import { logger, config, changePanel, database, popup, cmd, setBackground, set_console_alert, SilverAuth, initializeDiscordRPC, accountSelect, addAccount, pkg, appdata, Salert, settings } from './utils.js';
 
 // libs
 const { ipcRenderer } = require('electron');
@@ -40,8 +40,10 @@ class Launcher {
         console.log('Starting launcher...');
         this.startLauncher();
         this.donsvp();
-        this.initCmd()
+        this.initCmd();
+
         initializeDiscordRPC();
+        set_console_alert();
 
     }
 
@@ -96,6 +98,7 @@ class Launcher {
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.keyCode == 87) {
                 ipcRenderer.send('main-window-close');
+                set_console_alert();
             }
         })
         let keysPressed = [];
@@ -195,7 +198,7 @@ class Launcher {
     }    
 
     async startLauncher() {
-    
+
         const accounts = await settings.load('ACCOUNT');
         const appDataPath = await appdata();
         const isMac = process.platform === 'darwin';
