@@ -39,8 +39,10 @@ class Launcher {
         this.createPanels(Login, Home, Settings);
         console.log('Starting launcher...');
         this.startLauncher();
-        this.donsvp();
+        //this.donsvp();
         this.initCmd();
+
+        Salert('Silverdium est actuelement en développement, tu peut rejoindre <a href="https://discord.gg/tW2EQ4EsD6">le discord</a> !')
 
         initializeDiscordRPC();
         set_console_alert();

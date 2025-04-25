@@ -23,7 +23,7 @@ export default function initializeDiscordRPC() {
             smallImageKey: "icon",
             smallImageText: "Icône",
             buttons: [
-                { label: "Site Web", url: "https://silverdium.fr" },
+                { label: "Site Web", url: "https://www.silverdium.fr" },
                 { label: "Discord", url: "https://discord.gg/tW2EQ4EsD6" }
             ],
             instance: false,
