@@ -78,7 +78,8 @@ input::-webkit-inner-spin-button {
     width: 14px;
     height: 14px;
     font-size: 14px;
-    color: #bdbdbd;
+    color: #ffffff;
+    text-shadow: 0 0 2px #33333385;
 }
 
 .button-frame {

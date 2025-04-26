@@ -9,6 +9,7 @@
     position: absolute;
     padding: 15px;
     background: var(--background);
+    backdrop-filter: var(--backdrop);
     text-align: center;
     min-width: 40%;
     box-shadow: 0 0px 10000px rgba(0, 0, 0, 1);
@@ -56,4 +57,9 @@
     width: 50%;
     padding: 0.4rem 1rem;
     margin-top: 10px;
+}
+
+input::placeholder {
+    color: var(--color);
+    opacity: 0.8;  
 }

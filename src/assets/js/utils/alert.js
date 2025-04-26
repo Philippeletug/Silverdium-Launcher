@@ -1,6 +1,6 @@
 const Swal = require('sweetalert2');
 
-function Salert(title, htmlmsg, icotype, showConfirmButton, showCancelButton) {
+function Salert(title, htmlmsg, icotype, showConfirmButton = true, showCancelButton = false) {
     let logname = 'ALERT';
     console.log(`[${logname}]: Affichage d'une alert.`)
     Swal.fire({

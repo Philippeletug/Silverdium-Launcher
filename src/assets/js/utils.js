@@ -48,7 +48,7 @@ async function setBackground(theme) {
     } else if (fs.existsSync(`${__dirname}/assets/images/background/${theme ? 'dark' : 'light'}`)) {
         let backgrounds = fs.readdirSync(`${__dirname}/assets/images/background/${theme ? 'dark' : 'light'}`);
         let Background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-        background = `linear-gradient(#00000080, #00000080), url(./assets/images/background/${theme ? 'dark' : 'light'}/${Background})`;
+        background = `url(./assets/images/background/${theme ? 'dark' : 'light'}/${Background})`;
     }
     body.style.backgroundImage = background ? background : theme ? '#000' : '#fff';
     body.style.backgroundSize = 'cover';

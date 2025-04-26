@@ -42,7 +42,7 @@ class Launcher {
         //this.donsvp();
         this.initCmd();
 
-        Salert('Silverdium est actuelement en développement, tu peut rejoindre <a href="https://discord.gg/tW2EQ4EsD6">le discord</a> !')
+        Salert('silverdium launcher', 'Silverdium est actuelement en développement mais tu peut rejoindre <a href="https://discord.gg/tW2EQ4EsD6">le discord</a> !', 'info')
 
         initializeDiscordRPC();
         set_console_alert();
